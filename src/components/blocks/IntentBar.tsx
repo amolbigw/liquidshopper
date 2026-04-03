@@ -112,8 +112,11 @@ export function IntentBar({ manifest }: IntentBarProps) {
 
   return (
     <div
-      className="h-full flex flex-col justify-center glass rounded-sm border border-white/[0.06] px-4 md:px-6 py-3"
+      className="h-full flex items-center justify-center py-1.5 md:py-2"
       data-block-id={manifest.block_id}
+    >
+    <div
+      className="w-full max-w-[96%] md:max-w-[92%] flex flex-col justify-center glass rounded-sm border border-white/[0.06] px-4 md:px-6 py-3"
     >
       <form onSubmit={handleSubmit} className="flex items-center gap-3">
         {/* Search icon */}
@@ -179,6 +182,7 @@ export function IntentBar({ manifest }: IntentBarProps) {
           </button>
         </div>
       )}
+    </div>
     </div>
   );
 }
