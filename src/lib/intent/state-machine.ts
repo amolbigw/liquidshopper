@@ -34,8 +34,29 @@ function handleTextOrVoiceQuery(
   signal: SignalEvent,
 ): IntentVector {
   const p = signal.payload as Record<string, unknown>;
+  // A new text query REPLACES the current intent (spec 3.5: text wins over everything).
+  // Clear all vehicle-attribute fields first, then set what was parsed.
   let next = { ...intent };
 
+  // Reset all search-derived fields so stale values don't persist
+  next.condition = null;
+  next.body = null;
+  next.make = null;
+  next.model = null;
+  next.year_min = null;
+  next.year_max = null;
+  next.price_min = null;
+  next.price_max = null;
+  next.mileage_max = null;
+  next.fuel = null;
+  next.drivetrain = null;
+  next.features = [];
+  next.urgency = null;
+  next.focused_vehicle_id = null;
+  next.compared_vehicle_ids = [];
+  next.comparison_mode = false;
+
+  // Now set whatever the parser extracted
   if (p.condition) next.condition = p.condition as VehicleCondition;
   if (p.body) next.body = p.body as BodyType;
   if (p.make) next.make = p.make as string;
@@ -48,13 +69,12 @@ function handleTextOrVoiceQuery(
   if (p.fuel) next.fuel = p.fuel as FuelType;
   if (p.urgency) next.urgency = p.urgency as UrgencyLevel;
   if (Array.isArray(p.features) && p.features.length > 0) {
-    const merged = new Set([...next.features, ...(p.features as string[])]);
-    next.features = [...merged];
+    next.features = [...(p.features as string[])];
   }
 
-  // Confidence from text extraction (see spec 3.3)
-  const delta = typeof p.confidence === "number" ? p.confidence : 0;
-  next.confidence = clampConfidence(next.confidence + delta);
+  // Confidence is SET from this query, not accumulated
+  const newConfidence = typeof p.confidence === "number" ? p.confidence : 0;
+  next.confidence = clampConfidence(newConfidence);
 
   return pushSignal(next, signal);
 }
