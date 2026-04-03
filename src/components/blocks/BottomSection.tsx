@@ -9,10 +9,10 @@ import { getVehicleCardImage } from "@/lib/inventory/vehicle-images";
 import { formatPrice } from "@/lib/utils/format";
 
 const INCENTIVES = [
-  { id: "inc1", title: "0% APR for 60 Months", subtitle: "On select new models", savings: "$4,500", badge: "Finance" },
-  { id: "inc2", title: "Employee Pricing Event", subtitle: "All 2024 inventory", savings: "$6,200", badge: "Special" },
-  { id: "inc3", title: "$2,000 Loyalty Bonus", subtitle: "For returning customers", savings: "$2,000", badge: "Loyalty" },
-];
+  { id: "inc1", title: "0% APR for 60 Months", subtitle: "On select new models", savings: "$4,500", badge: "Finance", accent: "blue" },
+  { id: "inc2", title: "Employee Pricing Event", subtitle: "All 2024 inventory", savings: "$6,200", badge: "Special", accent: "green" },
+  { id: "inc3", title: "$2,000 Loyalty Bonus", subtitle: "For returning customers", savings: "$2,000", badge: "Loyalty", accent: "amber" },
+] as const;
 
 export function BottomSection() {
   const processSignal = useIntentStore((s) => s.processSignal);
@@ -80,21 +80,33 @@ export function BottomSection() {
           Special Offers & Incentives
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {INCENTIVES.map((inc) => (
-            <div
-              key={inc.id}
-              className="bg-gradient-to-br from-blue-600/8 to-[#171717] border border-blue-500/10 rounded-sm p-4 flex flex-col gap-2"
-            >
-              <span className="text-blue-400 text-[9px] font-bold uppercase tracking-wider">
-                {inc.badge}
-              </span>
-              <h3 className="text-white font-bold text-sm">{inc.title}</h3>
-              <p className="text-white/40 text-xs">{inc.subtitle}</p>
-              <p className="text-green-400 text-xs font-semibold">
-                Save up to {inc.savings}
-              </p>
-            </div>
-          ))}
+          {INCENTIVES.map((inc) => {
+            const accentStyles = {
+              blue: "border-l-blue-500 bg-blue-500/[0.06]",
+              green: "border-l-green-500 bg-green-500/[0.06]",
+              amber: "border-l-amber-500 bg-amber-500/[0.06]",
+            };
+            const badgeColors = {
+              blue: "text-blue-500",
+              green: "text-green-600",
+              amber: "text-amber-600",
+            };
+            return (
+              <div
+                key={inc.id}
+                className={`border border-white/[0.06] border-l-4 ${accentStyles[inc.accent]} rounded-sm p-5 flex flex-col gap-2`}
+              >
+                <span className={`${badgeColors[inc.accent]} text-[9px] font-bold uppercase tracking-wider`}>
+                  {inc.badge}
+                </span>
+                <h3 className="text-white font-bold text-base">{inc.title}</h3>
+                <p className="text-white/50 text-xs">{inc.subtitle}</p>
+                <p className="text-green-500 text-sm font-semibold mt-1">
+                  Save up to {inc.savings}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </section>
 

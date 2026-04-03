@@ -14,7 +14,8 @@ const INCENTIVES = [
     title: "0% APR for 60 Months",
     subtitle: "On all new 2024 models with approved credit",
     savings: "$4,500",
-    color: "from-blue-600/15 to-blue-900/10 border-blue-500/15",
+    color: "border-l-blue-500 bg-blue-500/[0.06] border-white/[0.06]",
+    badgeColor: "text-blue-500",
   },
   {
     id: "promo_2",
@@ -22,7 +23,8 @@ const INCENTIVES = [
     title: "Employee Pricing for Everyone",
     subtitle: "All remaining 2024 inventory must go",
     savings: "$6,200",
-    color: "from-green-600/15 to-green-900/10 border-green-500/15",
+    color: "border-l-green-500 bg-green-500/[0.06] border-white/[0.06]",
+    badgeColor: "text-green-600",
   },
   {
     id: "promo_3",
@@ -30,7 +32,8 @@ const INCENTIVES = [
     title: "$2,000 Loyalty Cash",
     subtitle: "For returning AMOLW customers on any new vehicle",
     savings: "$2,000",
-    color: "from-yellow-600/10 to-yellow-900/5 border-yellow-500/10",
+    color: "border-l-amber-500 bg-amber-500/[0.06] border-white/[0.06]",
+    badgeColor: "text-amber-600",
   },
 ];
 
@@ -157,10 +160,10 @@ export function InventoryBrowse() {
             return (
               <div
                 key={inc.id}
-                className={`bg-gradient-to-br ${inc.color} border rounded-sm p-5 flex flex-col justify-between min-h-[200px]`}
+                className={`${inc.color} border border-l-4 rounded-sm p-5 flex flex-col justify-between min-h-[200px]`}
               >
                 <div>
-                  <span className="text-blue-400 text-[9px] font-bold uppercase tracking-wider">
+                  <span className={`${inc.badgeColor} text-[9px] font-bold uppercase tracking-wider`}>
                     {inc.badge}
                   </span>
                   <h3 className="text-white font-bold text-xl mt-2 mb-1">{inc.title}</h3>
