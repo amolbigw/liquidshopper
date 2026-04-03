@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, type FormEvent } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo, type FormEvent } from "react";
 import { useIntentStore, useActiveFilters } from "@/lib/intent/store";
 import { parseTextQuery } from "@/lib/signals/text-parser";
 import { saveSearch, getSearchHistory } from "@/lib/utils/history";
+import { parseUTMParams } from "@/lib/signals/utm-parser";
 import type { BlockManifest } from "@/lib/layout/types";
 import { Chip } from "@/components/ui/Chip";
 
@@ -26,8 +27,56 @@ export function IntentBar({ manifest }: IntentBarProps) {
   const processSignal = useIntentStore((s) => s.processSignal);
   const updateIntent = useIntentStore((s) => s.updateIntent);
   const activeFilters = useActiveFilters();
+  const intent = useIntentStore((s) => s.intent);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Build a personalized welcome message from UTM params + intent
+  const welcomeMessage = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    const utmParams = parseUTMParams(window.location.href);
+    if (!utmParams) return null;
+
+    // Source label
+    const sourceMap: Record<string, string> = {
+      google: "Google",
+      facebook: "Facebook",
+      instagram: "Instagram",
+      tiktok: "TikTok",
+      email: "our email",
+      dealer_website: "our partner network",
+      bing: "Bing",
+      youtube: "YouTube",
+      twitter: "X",
+      reddit: "Reddit",
+    };
+    const sourceName = utmParams.utm_source
+      ? sourceMap[utmParams.utm_source.toLowerCase()] || utmParams.utm_source
+      : null;
+
+    // Interest description from intent state
+    const parts: string[] = [];
+    if (intent.condition) parts.push(intent.condition === "cpo" ? "certified pre-owned" : intent.condition);
+    if (intent.fuel === "electric") parts.push("electric");
+    if (intent.fuel === "hybrid") parts.push("hybrid");
+    if (intent.make) parts.push(intent.make);
+    if (intent.model) parts.push(intent.model);
+    if (!intent.model && intent.body) {
+      const bodyLabels: Record<string, string> = {
+        truck: "trucks", suv: "SUVs", sedan: "sedans", coupe: "coupes",
+        van: "vans", convertible: "convertibles", wagon: "wagons",
+        hatchback: "hatchbacks", crossover: "crossovers",
+      };
+      parts.push(bodyLabels[intent.body] || intent.body);
+    }
+    if (intent.has_promo_intent) parts.push("with special offers");
+
+    const interestText = parts.length > 0 ? parts.join(" ") : null;
+
+    if (!sourceName && !interestText) return null;
+
+    return { sourceName, interestText };
+  }, [intent.condition, intent.fuel, intent.make, intent.model, intent.body, intent.has_promo_intent]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -144,6 +193,23 @@ export function IntentBar({ manifest }: IntentBarProps) {
       data-block-id={manifest.block_id}
     >
     <div className="w-full max-w-[96%] md:max-w-[92%] relative" ref={containerRef}>
+      {/* UTM welcome message */}
+      {welcomeMessage && (
+        <div className="text-center mb-2 px-2">
+          <p className="text-white/50 text-xs md:text-sm font-light tracking-wide">
+            Welcome to <span className="text-white/80 font-medium">Amol Dealership</span>
+            {welcomeMessage.sourceName && (
+              <>.{" "}Thanks for coming from <span className="text-blue-400/80">{welcomeMessage.sourceName}</span></>
+            )}
+            {welcomeMessage.interestText && (
+              <>{welcomeMessage.sourceName ? " — " : ". "}looks like you&apos;re interested in{" "}
+              <span className="text-white/80 font-medium">{welcomeMessage.interestText}</span></>
+            )}
+            .
+          </p>
+        </div>
+      )}
+
       {/* Search bar */}
       <div
         className={`flex flex-col justify-center rounded-full bg-white/[0.04] border px-5 md:px-7 py-2.5 transition-all duration-300 ${
