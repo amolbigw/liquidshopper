@@ -95,7 +95,7 @@ export function AdaptiveGrid() {
     <div
       className="grid gap-[var(--grid-gap)] w-full max-w-[1440px] mx-auto px-4"
       style={{
-        gridTemplateColumns: "repeat(10, 1fr)",
+        gridTemplateColumns: "repeat(12, 1fr)",
         gridTemplateRows: "auto repeat(8, minmax(80px, auto))",
       }}
     >
