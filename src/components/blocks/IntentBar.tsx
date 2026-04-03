@@ -116,56 +116,59 @@ export function IntentBar({ manifest }: IntentBarProps) {
       data-block-id={manifest.block_id}
     >
     <div
-      className="w-full max-w-[96%] md:max-w-[92%] flex flex-col justify-center glass rounded-sm border border-white/[0.06] px-4 md:px-6 py-3"
+      className="w-full max-w-[96%] md:max-w-[92%] flex flex-col justify-center rounded-full bg-white/[0.04] border border-white/[0.08] px-5 md:px-7 py-2.5 shadow-[0_0_20px_rgba(59,130,246,0.04)] hover:border-white/[0.12] hover:shadow-[0_0_30px_rgba(59,130,246,0.06)] focus-within:border-blue-500/30 focus-within:shadow-[0_0_30px_rgba(59,130,246,0.1)] transition-all duration-300"
     >
       <form onSubmit={handleSubmit} className="flex items-center gap-3">
         {/* Search icon */}
         <svg
-          width="20"
-          height="20"
+          width="18"
+          height="18"
           viewBox="0 0 24 24"
           fill="none"
-          className="text-white/40 flex-shrink-0"
+          className="text-white/25 flex-shrink-0"
         >
-          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-          <path d="M16 16l4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M16 16l4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
 
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="What are you looking for? Try &quot;used Ford F-150 under $40k&quot;"
-          className="flex-1 bg-transparent text-white text-lg placeholder:text-white/30 focus:outline-none"
+          placeholder="Search vehicles, e.g. &quot;used Ford F-150 under $40k&quot;"
+          className="flex-1 bg-transparent text-white text-base font-light tracking-wide placeholder:text-white/20 focus:outline-none"
         />
 
         {/* Submit button (visible when query has text) */}
         {query.trim() && (
           <button
             type="submit"
-            className="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold uppercase tracking-wider rounded-sm transition-colors"
+            className="px-5 py-1.5 bg-blue-500/90 hover:bg-blue-500 text-white text-[10px] font-semibold uppercase tracking-[0.15em] rounded-full transition-all duration-200"
           >
             Search
           </button>
         )}
 
+        {/* Divider */}
+        <div className="w-px h-5 bg-white/[0.08]" />
+
         {/* Microphone button */}
         <button
           type="button"
-          className="p-2 rounded-full hover:bg-white/5 transition-colors text-white/40 hover:text-white/70"
+          className="p-1.5 rounded-full hover:bg-white/5 transition-colors text-white/20 hover:text-white/50"
           aria-label="Voice search"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <rect x="9" y="2" width="6" height="12" rx="3" stroke="currentColor" strokeWidth="2" />
-            <path d="M5 11a7 7 0 0014 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M12 18v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <rect x="9" y="2" width="6" height="12" rx="3" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M5 11a7 7 0 0014 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M12 18v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
         </button>
       </form>
 
       {/* Active filter chips */}
       {activeFilters.length > 0 && (
-        <div className="flex items-center gap-2 mt-2 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center gap-1.5 mt-2 px-2 overflow-x-auto pb-1 scrollbar-none">
           {activeFilters.map((label) => (
             <Chip
               key={label}
