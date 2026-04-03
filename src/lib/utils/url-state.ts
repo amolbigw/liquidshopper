@@ -1,21 +1,81 @@
 // ---------------------------------------------------------------------------
-// Utility Layer -- URL <-> Intent State Sync   (spec section 14.4, 9.5)
+// URL <-> Intent State Sync — SEO-friendly paths
+//
+// URL patterns:
+//   Homepage:       /
+//   Search (SRP):   /inventory/used/ford/f-150/philadelphia-pa
+//   Vehicle (VDP):  /inventory/used/2024/ford/f-150/xlt-supercrew/philadelphia-pa/veh_abc123
+//
+// Additional filters go as query params: ?price_max=40000&fuel=electric
 // ---------------------------------------------------------------------------
 
 import type { IntentVector } from "../intent/types";
+import { MOCK_VEHICLES } from "../inventory/mock-data";
+import { getDealerById, DEFAULT_LOCATION } from "../inventory/dealers";
+
+/** Slugify a string for URLs: "F-150 XLT SuperCrew" → "f-150-xlt-supercrew" */
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 /**
- * Serialize the intent vector into URL search params.
- * Only non-null, non-default values are written. Spec section 14.4 defines
- * the canonical parameter names.
+ * Build an SEO-friendly URL path from the intent vector.
+ *
+ * VDP (focused vehicle): /inventory/used/2024/ford/f-150/xlt-supercrew/philadelphia-pa/veh_abc
+ * SRP (search results):  /inventory/used/ford/f-150/philadelphia-pa
+ * Broad search:          /inventory/used/trucks/philadelphia-pa
+ * Homepage:              /
  */
-export function intentToURLParams(intent: IntentVector): URLSearchParams {
+export function intentToSEOPath(intent: IntentVector): string {
+  const segments: string[] = [];
+
+  // If no meaningful intent, stay at root
+  if (!intent.condition && !intent.body && !intent.make && !intent.model && !intent.focused_vehicle_id) {
+    return "/";
+  }
+
+  segments.push("inventory");
+
+  // VDP — single focused vehicle
+  if (intent.focused_vehicle_id) {
+    const vehicle = MOCK_VEHICLES.find((v) => v.vehicle_id === intent.focused_vehicle_id);
+    if (vehicle) {
+      const condition = vehicle.condition.toLowerCase(); // "new", "used", "cpo"
+      const location = getDealerById(vehicle.dealer_id)?.slug ?? DEFAULT_LOCATION;
+
+      segments.push(condition);
+      segments.push(String(vehicle.year));
+      segments.push(slugify(vehicle.make));
+      segments.push(slugify(vehicle.model));
+      if (vehicle.trim) segments.push(slugify(vehicle.trim));
+      segments.push(location);
+      segments.push(vehicle.vehicle_id);
+
+      return "/" + segments.join("/");
+    }
+  }
+
+  // SRP — search results
+  if (intent.condition) segments.push(intent.condition); // "used", "new", "cpo"
+  if (intent.body && !intent.make) segments.push(slugify(intent.body) + "s"); // "trucks", "suvs"
+  if (intent.make) segments.push(slugify(intent.make));
+  if (intent.model) segments.push(slugify(intent.model));
+
+  // Location
+  segments.push(DEFAULT_LOCATION);
+
+  return "/" + segments.join("/");
+}
+
+/**
+ * Build additional query params for filters not captured in the path.
+ */
+export function intentToQueryParams(intent: IntentVector): URLSearchParams {
   const params = new URLSearchParams();
 
-  if (intent.condition) params.set("condition", intent.condition);
-  if (intent.body) params.set("body", intent.body);
-  if (intent.make) params.set("make", intent.make);
-  if (intent.model) params.set("model", intent.model);
   if (intent.year_min != null) params.set("year_min", String(intent.year_min));
   if (intent.year_max != null) params.set("year_max", String(intent.year_max));
   if (intent.price_min != null) params.set("price_min", String(intent.price_min));
@@ -24,7 +84,6 @@ export function intentToURLParams(intent: IntentVector): URLSearchParams {
   if (intent.fuel) params.set("fuel", intent.fuel);
   if (intent.drivetrain) params.set("drivetrain", intent.drivetrain);
   if (intent.features.length > 0) params.set("features", intent.features.join(","));
-  if (intent.focused_vehicle_id) params.set("vehicle_id", intent.focused_vehicle_id);
   if (intent.compared_vehicle_ids.length > 0) {
     params.set("compare", intent.compared_vehicle_ids.join(","));
   }
@@ -33,28 +92,100 @@ export function intentToURLParams(intent: IntentVector): URLSearchParams {
 }
 
 /**
- * Deserialize URL search params into a partial intent vector.
- * All fields are optional; missing params yield null/empty.
+ * Push the current intent vector into the browser URL as an SEO-friendly path.
  */
-export function urlParamsToIntent(
-  params: URLSearchParams,
-): Partial<IntentVector> {
+export function syncURLWithIntent(intent: IntentVector): void {
+  if (typeof window === "undefined") return;
+
+  const path = intentToSEOPath(intent);
+  const params = intentToQueryParams(intent);
+  const search = params.toString();
+  const newURL = search ? `${path}?${search}` : path;
+
+  window.history.replaceState(
+    { intentConfidence: intent.confidence },
+    "",
+    newURL,
+  );
+}
+
+/**
+ * Parse an SEO-friendly URL path back into intent fields.
+ * Handles both old query-param style and new path style.
+ */
+export function readIntentFromURL(): Partial<IntentVector> | null {
+  if (typeof window === "undefined") return null;
+
+  const pathname = window.location.pathname;
+  const params = new URLSearchParams(window.location.search);
   const result: Partial<IntentVector> = {};
 
-  const condition = params.get("condition");
-  if (condition === "new" || condition === "used" || condition === "cpo") {
-    result.condition = condition;
+  // --- Parse path segments ---
+  // /inventory/used/2024/ford/f-150/xlt-supercrew/philadelphia-pa/veh_abc123
+  if (pathname.startsWith("/inventory/")) {
+    const parts = pathname.replace("/inventory/", "").split("/").filter(Boolean);
+
+    for (const part of parts) {
+      // Vehicle ID
+      if (part.startsWith("veh_")) {
+        result.focused_vehicle_id = part;
+        // Look up vehicle to set make/model/condition
+        const vehicle = MOCK_VEHICLES.find((v) => v.vehicle_id === part);
+        if (vehicle) {
+          result.make = vehicle.make;
+          result.model = vehicle.model;
+          result.condition = vehicle.condition.toLowerCase() as IntentVector["condition"];
+          result.confidence = 0.70;
+        }
+        continue;
+      }
+
+      // Condition
+      if (part === "new" || part === "used" || part === "cpo") {
+        result.condition = part;
+        continue;
+      }
+
+      // Year (4-digit number starting with 19 or 20)
+      if (/^(19|20)\d{2}$/.test(part)) {
+        const yr = parseInt(part, 10);
+        result.year_min = yr;
+        result.year_max = yr;
+        continue;
+      }
+
+      // Body type plurals
+      const bodyMap: Record<string, string> = {
+        trucks: "truck", suvs: "suv", sedans: "sedan", coupes: "coupe",
+        vans: "van", crossovers: "crossover", convertibles: "convertible",
+        wagons: "wagon", hatchbacks: "hatchback",
+      };
+      if (bodyMap[part]) {
+        result.body = bodyMap[part] as IntentVector["body"];
+        continue;
+      }
+
+      // Location slug — skip (we don't store location in intent)
+      if (part.match(/-[a-z]{2}$/)) continue;
+
+      // Make/model — try to match against known vehicles
+      const unslug = part.replace(/-/g, " ");
+      const matchedVehicle = MOCK_VEHICLES.find(
+        (v) => slugify(v.make) === part || slugify(v.model) === part
+      );
+      if (matchedVehicle) {
+        if (slugify(matchedVehicle.make) === part && !result.make) {
+          result.make = matchedVehicle.make;
+        } else if (slugify(matchedVehicle.model) === part && !result.model) {
+          result.model = matchedVehicle.model;
+          if (!result.make) result.make = matchedVehicle.make;
+        }
+        continue;
+      }
+    }
   }
 
-  const body = params.get("body");
-  if (body) result.body = body as IntentVector["body"];
-
-  const make = params.get("make");
-  if (make) result.make = make;
-
-  const model = params.get("model");
-  if (model) result.model = model;
-
+  // --- Parse query params (additional filters) ---
   const yearMin = params.get("year_min");
   if (yearMin) result.year_min = parseInt(yearMin, 10) || null;
 
@@ -79,9 +210,6 @@ export function urlParamsToIntent(
   const features = params.get("features");
   if (features) result.features = features.split(",").filter(Boolean);
 
-  const vehicleId = params.get("vehicle_id");
-  if (vehicleId) result.focused_vehicle_id = vehicleId;
-
   const compare = params.get("compare");
   if (compare) {
     result.compared_vehicle_ids = compare.split(",").filter(Boolean).slice(0, 3);
@@ -90,46 +218,41 @@ export function urlParamsToIntent(
     }
   }
 
-  return result;
+  // Also support legacy query-param style
+  const condition = params.get("condition");
+  if (condition && !result.condition) {
+    if (condition === "new" || condition === "used" || condition === "cpo") {
+      result.condition = condition;
+    }
+  }
+  const make = params.get("make");
+  if (make && !result.make) result.make = make;
+  const model = params.get("model");
+  if (model && !result.model) result.model = model;
+  const body = params.get("body");
+  if (body && !result.body) result.body = body as IntentVector["body"];
+  const vehicleId = params.get("vehicle_id");
+  if (vehicleId && !result.focused_vehicle_id) result.focused_vehicle_id = vehicleId;
+
+  // Set confidence based on what was parsed
+  if (!result.confidence) {
+    let conf = 0;
+    if (result.focused_vehicle_id) conf = 0.70;
+    else if (result.make && result.model) conf = 0.45;
+    else if (result.make || result.body || result.condition) conf = 0.30;
+    if (conf > 0) result.confidence = conf;
+  }
+
+  // Check if anything was actually parsed
+  const hasData = Object.keys(result).length > 0;
+  return hasData ? result : null;
 }
 
-/**
- * Push the current intent vector into the browser URL without a full
- * navigation. Uses replaceState so the back button still works naturally.
- */
-export function syncURLWithIntent(intent: IntentVector): void {
-  if (typeof window === "undefined") return;
-
-  const params = intentToURLParams(intent);
-  const search = params.toString();
-  const newURL = search
-    ? `${window.location.pathname}?${search}`
-    : window.location.pathname;
-
-  window.history.replaceState(
-    { intentConfidence: intent.confidence },
-    "",
-    newURL,
-  );
+// Keep for backward compat
+export function intentToURLParams(intent: IntentVector): URLSearchParams {
+  return intentToQueryParams(intent);
 }
 
-/**
- * Attempt to read an intent vector from the current page URL.
- * Returns null if no intent-related params are present.
- */
-export function readIntentFromURL(): Partial<IntentVector> | null {
-  if (typeof window === "undefined") return null;
-
-  const params = new URLSearchParams(window.location.search);
-
-  // Quick check: are there any intent params at all?
-  const intentKeys = [
-    "condition", "body", "make", "model", "year_min", "year_max",
-    "price_min", "price_max", "mileage_max", "fuel", "drivetrain",
-    "features", "vehicle_id", "compare",
-  ];
-  const hasAny = intentKeys.some((k) => params.has(k));
-  if (!hasAny) return null;
-
-  return urlParamsToIntent(params);
+export function urlParamsToIntent(params: URLSearchParams): Partial<IntentVector> {
+  return readIntentFromURL() ?? {};
 }
