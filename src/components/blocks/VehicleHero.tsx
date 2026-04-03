@@ -62,14 +62,14 @@ export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroPr
       className="relative h-full overflow-hidden rounded-sm bg-gradient-to-br from-[#171717] to-[#0a0a0a] flex flex-col justify-end p-4 md:p-6"
       data-block-id={manifest.block_id}
     >
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-[1]" />
+      {/* Gradient overlay — pointer-events-none so buttons below remain clickable */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-[1] pointer-events-none" />
 
       {/* Vehicle image */}
       <img
         src={getVehicleHeroImage(v.make, v.model)}
         alt={`${v.year} ${v.make} ${v.model}`}
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
         loading="eager"
       />
 
