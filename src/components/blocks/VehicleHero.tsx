@@ -120,16 +120,18 @@ export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroPr
           )}
         </div>
 
-        {/* CTA */}
-        <div className="mt-3">
-          <Button
-            variant="secondary"
-            size={isLarge ? "md" : "sm"}
-            onClick={() => setFocusedVehicle(v.vehicle_id)}
-          >
-            View Details
-          </Button>
-        </div>
+        {/* CTA — only show when vehicle isn't already in focus (not on VDP) */}
+        {intent.focused_vehicle_id !== v.vehicle_id && (
+          <div className="mt-3">
+            <Button
+              variant="secondary"
+              size={isLarge ? "md" : "sm"}
+              onClick={() => setFocusedVehicle(v.vehicle_id)}
+            >
+              View Details
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
