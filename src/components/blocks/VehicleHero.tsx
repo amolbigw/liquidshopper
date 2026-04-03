@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
+import { getVehicleHeroImage } from "@/lib/inventory/vehicle-images";
 import { formatNumber, formatPrice } from "@/lib/utils/format";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -44,21 +45,13 @@ export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroPr
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-[1]" />
 
-      {/* Vehicle image placeholder */}
-      <div className="absolute inset-0 flex items-center justify-center z-0">
-        <svg
-          width="120"
-          height="60"
-          viewBox="0 0 120 60"
-          fill="none"
-          className="text-white/[0.06]"
-        >
-          <rect x="10" y="25" width="100" height="25" rx="5" stroke="currentColor" strokeWidth="2" />
-          <path d="M30 25 L40 10 L80 10 L95 25" stroke="currentColor" strokeWidth="2" />
-          <circle cx="30" cy="50" r="7" stroke="currentColor" strokeWidth="2" />
-          <circle cx="90" cy="50" r="7" stroke="currentColor" strokeWidth="2" />
-        </svg>
-      </div>
+      {/* Vehicle image */}
+      <img
+        src={getVehicleHeroImage(v.make, v.model)}
+        alt={`${v.year} ${v.make} ${v.model}`}
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        loading="eager"
+      />
 
       {/* Content */}
       <div className="relative z-[2] flex flex-col gap-2">

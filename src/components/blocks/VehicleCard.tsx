@@ -4,6 +4,7 @@ import { useMemo, useCallback } from "react";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
+import { getVehicleCardImage } from "@/lib/inventory/vehicle-images";
 import { useIntentStore } from "@/lib/intent/store";
 import { formatNumber, formatPrice } from "@/lib/utils/format";
 import { Badge } from "@/components/ui/Badge";
@@ -46,20 +47,14 @@ export function VehicleCard({ manifest, vehicle }: VehicleCardProps) {
       data-block-id={manifest.block_id}
       onClick={handleView}
     >
-      {/* Image placeholder */}
-      <div className="relative aspect-[16/10] bg-[#1f1f1f] flex items-center justify-center overflow-hidden">
-        <svg
-          width="64"
-          height="36"
-          viewBox="0 0 120 60"
-          fill="none"
-          className="text-white/[0.08]"
-        >
-          <rect x="10" y="25" width="100" height="25" rx="5" stroke="currentColor" strokeWidth="2" />
-          <path d="M30 25 L40 10 L80 10 L95 25" stroke="currentColor" strokeWidth="2" />
-          <circle cx="30" cy="50" r="7" stroke="currentColor" strokeWidth="2" />
-          <circle cx="90" cy="50" r="7" stroke="currentColor" strokeWidth="2" />
-        </svg>
+      {/* Vehicle image */}
+      <div className="relative aspect-[16/10] bg-[#1f1f1f] overflow-hidden">
+        <img
+          src={getVehicleCardImage(v.make, v.model)}
+          alt={`${v.year} ${v.make} ${v.model}`}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
 
         {/* Badges */}
         <div className="absolute top-2 left-2 flex gap-1">
