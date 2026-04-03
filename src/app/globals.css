@@ -140,6 +140,11 @@ body {
   outline-offset: 2px;
 }
 
+/* Let the pill container handle focus styling for the search input */
+input[placeholder="Search vehicles..."]:focus-visible {
+  outline: none;
+}
+
 /* ---------------------------------------------------------------------------
    Utility: Glass effect
    --------------------------------------------------------------------------- */
