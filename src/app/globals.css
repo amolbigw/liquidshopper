@@ -151,6 +151,17 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
+   Contrast Boost — brighten low-opacity text for readability on dark bg
+   --------------------------------------------------------------------------- */
+
+.text-white\/20 { color: rgba(255, 255, 255, 0.32); }
+.text-white\/30 { color: rgba(255, 255, 255, 0.45); }
+.text-white\/40 { color: rgba(255, 255, 255, 0.55); }
+.text-white\/50 { color: rgba(255, 255, 255, 0.62); }
+.placeholder\:text-white\/20::placeholder { color: rgba(255, 255, 255, 0.32); }
+.placeholder\:text-white\/30::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+/* ---------------------------------------------------------------------------
    Theme-aware overrides for hardcoded dark-mode colors
    These swap all #171717/#0a0a0a/#1f1f1f backgrounds and white text
    to light-mode equivalents when data-theme="light" is set.

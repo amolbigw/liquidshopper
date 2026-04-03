@@ -86,12 +86,12 @@ export function VehicleCard({ manifest, vehicle }: VehicleCardProps) {
       {/* Content */}
       <div className="flex flex-col flex-1 p-3 gap-1.5">
         {/* Title */}
-        <h3 className="text-white font-bold text-sm leading-tight truncate">
+        <h3 className="text-white font-bold text-base md:text-lg leading-tight truncate">
           {v.year} {v.make} {v.model}
         </h3>
 
         {/* Specs row */}
-        <p className="text-white/40 text-xs truncate">
+        <p className="text-white/50 text-xs truncate">
           {formatNumber(v.mileage)} mi &middot; {v.drivetrain} &middot;{" "}
           {v.fuel_type} &middot; {v.transmission}
         </p>
