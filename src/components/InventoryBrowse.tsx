@@ -153,7 +153,7 @@ export function InventoryBrowse() {
       </div>
 
       {/* Vehicle grid with incentive cards mixed in */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {gridItems.map((item, idx) => {
           if (item.type === "incentive") {
             const inc = item.incentive;
@@ -183,10 +183,10 @@ export function InventoryBrowse() {
             <button
               key={v.vehicle_id}
               onClick={() => handleVehicleClick(v.vehicle_id)}
-              className="group bg-[#171717] rounded-sm border border-white/[0.06] overflow-hidden hover:border-white/15 transition-all text-left flex flex-col h-full"
+              className="group bg-[#171717] rounded-sm border border-white/[0.06] overflow-hidden hover:border-white/15 transition-all text-left"
             >
-              {/* Image */}
-              <div className="relative aspect-[16/10] bg-[#1f1f1f] overflow-hidden flex-shrink-0">
+              {/* Image — fixed height so all cards match */}
+              <div className="relative h-[200px] bg-[#1f1f1f] overflow-hidden">
                 <img
                   src={getVehicleCardImage(v.make, v.model)}
                   alt={`${v.year} ${v.make} ${v.model}`}
@@ -202,7 +202,7 @@ export function InventoryBrowse() {
               </div>
 
               {/* Content */}
-              <div className="p-3.5 flex flex-col flex-1">
+              <div className="p-3.5">
                 <h3 className="text-white font-bold text-sm mb-0.5 truncate">
                   {v.year} {v.make} {v.model}
                 </h3>
@@ -210,7 +210,7 @@ export function InventoryBrowse() {
                 <p className="text-white/40 text-xs mb-3 truncate">
                   {formatNumber(v.mileage)} mi · {v.drivetrain} · {v.fuel_type} · {v.transmission}
                 </p>
-                <div className="flex items-baseline gap-2 mt-auto">
+                <div className="flex items-baseline gap-2 mt-3">
                   <span className="text-white font-bold text-lg">
                     {formatPrice(v.sale_price)}
                   </span>

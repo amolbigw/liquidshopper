@@ -68,7 +68,7 @@ export function VehicleCard({ manifest, vehicle }: VehicleCardProps) {
       onClick={handleView}
     >
       {/* Vehicle image */}
-      <div className="relative aspect-[16/10] bg-[#1f1f1f] overflow-hidden">
+      <div className="relative h-[200px] bg-[#1f1f1f] overflow-hidden">
         <img
           src={getVehicleCardImage(v.make, v.model)}
           alt={`${v.year} ${v.make} ${v.model}`}
