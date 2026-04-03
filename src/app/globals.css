@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   LiquidShopper -- Global Styles
+   Tesla-inspired dark automotive aesthetic
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Grid system */
+  --grid-row-height: 52px;
+  --grid-gap: 6px;
+  --grid-cols: 9;
+
+  /* Surface palette */
+  --bg-primary: #0a0a0a;
+  --bg-surface: #171717;
+  --bg-surface-elevated: #1f1f1f;
+  --bg-glass: rgba(23, 23, 23, 0.85);
+
+  /* Text palette */
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
+
+  /* Accent */
+  --accent-blue: #3b82f6;
+  --accent-blue-hover: #2563eb;
+  --accent-green: #22c55e;
+  --accent-gold: #eab308;
+  --accent-red: #ef4444;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --grid-row-height: 44px;
+    --grid-gap: 4px;
+  }
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-surface: var(--bg-surface);
+  --color-surface-elevated: var(--bg-surface-elevated);
+  --color-accent: var(--accent-blue);
+  --color-accent-hover: var(--accent-blue-hover);
+  --font-sans: var(--font-inter);
+}
+
+/* ---------------------------------------------------------------------------
+   Base Resets & Body
+   --------------------------------------------------------------------------- */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   Custom Scrollbar (thin, dark)
+   --------------------------------------------------------------------------- */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Selection
+   --------------------------------------------------------------------------- */
+
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: #ffffff;
+}
+
+/* ---------------------------------------------------------------------------
+   Focus Styles (accessibility)
+   --------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Utility: Glass effect
+   --------------------------------------------------------------------------- */
+
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+}
