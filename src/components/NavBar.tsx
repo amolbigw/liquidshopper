@@ -3,17 +3,19 @@
 import { useIntentStore, createDefaultIntentVector } from "@/lib/intent/store";
 import { ThemeToggle } from "./ThemeToggle";
 
-export function NavBar() {
+interface NavBarProps {
+  showInventory?: boolean;
+  onToggleInventory?: () => void;
+}
+
+export function NavBar({ showInventory, onToggleInventory }: NavBarProps) {
   const updateIntent = useIntentStore((s) => s.updateIntent);
 
   const handleLogoClick = () => {
-    // Reset to Discovery state (homepage)
     const defaults = createDefaultIntentVector();
     updateIntent(defaults);
-
-    // Clear URL params
     if (typeof window !== "undefined") {
-      window.history.replaceState({}, "", window.location.pathname);
+      window.history.replaceState({}, "", "/");
     }
   };
 
@@ -24,11 +26,9 @@ export function NavBar() {
         className="flex items-center gap-3 group"
         aria-label="Go to homepage"
       >
-        {/* Logo mark */}
         <div className="w-8 h-8 bg-blue-500 rounded-sm flex items-center justify-center group-hover:bg-blue-400 transition-colors">
           <span className="text-white font-black text-sm leading-none">A</span>
         </div>
-        {/* Wordmark */}
         <div className="flex flex-col">
           <span className="text-white font-bold text-sm tracking-[0.2em] uppercase leading-none">
             AMOLW
@@ -39,11 +39,15 @@ export function NavBar() {
         </div>
       </button>
 
-      {/* Right side — nav links + theme toggle */}
       <div className="flex items-center gap-4 md:gap-6">
-        <span className="hidden md:inline text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
+        <button
+          onClick={onToggleInventory}
+          className={`hidden md:inline text-xs tracking-wider uppercase cursor-pointer transition-colors ${
+            showInventory ? "text-white font-semibold" : "text-white/40 hover:text-white/70"
+          }`}
+        >
           Inventory
-        </span>
+        </button>
         <span className="hidden md:inline text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
           Finance
         </span>
