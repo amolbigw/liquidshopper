@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useCallback } from "react";
-import { motion } from "framer-motion";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
@@ -41,10 +40,8 @@ export function VehicleCard({ manifest, vehicle }: VehicleCardProps) {
   if (!v) return null;
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.2 }}
-      className="h-full flex flex-col bg-[#171717] rounded-sm border border-white/[0.06] overflow-hidden cursor-pointer group"
+    <div
+      className="h-full flex flex-col bg-[#171717] rounded-sm border border-white/[0.06] overflow-hidden cursor-pointer group hover:scale-[1.02] transition-transform duration-200"
       data-block-id={manifest.block_id}
       onClick={handleView}
     >
@@ -121,6 +118,6 @@ export function VehicleCard({ manifest, vehicle }: VehicleCardProps) {
           </Button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

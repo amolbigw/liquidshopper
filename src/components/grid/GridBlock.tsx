@@ -1,63 +1,60 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import type { BlockManifest } from "@/lib/layout/types";
 
 interface GridBlockProps {
   manifest: BlockManifest;
   isMobile: boolean;
+  animated: boolean;
   children: React.ReactNode;
 }
 
 /** Compute stagger delay based on priority tier (spec section 9.2). */
 function staggerDelay(priority: number): number {
   if (priority >= 9) return 0;
-  if (priority >= 7) return 0.06;
-  if (priority >= 5) return 0.12;
-  return 0.18;
+  if (priority >= 7) return 60;
+  if (priority >= 5) return 120;
+  return 180;
 }
 
-export function GridBlock({ manifest, isMobile, children }: GridBlockProps) {
+export function GridBlock({ manifest, isMobile, animated, children }: GridBlockProps) {
+  const [visible, setVisible] = useState(!animated);
   const delay = staggerDelay(manifest.priority);
+
+  useEffect(() => {
+    if (!animated) {
+      setVisible(true);
+      return;
+    }
+    const timer = setTimeout(() => setVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [animated, delay]);
 
   if (isMobile) {
     return (
-      <motion.div
-        key={manifest.block_id}
-        layout
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{
-          opacity: { duration: 0.3, delay },
-          y: { duration: 0.3, delay },
-          layout: { duration: 0.35 },
+      <div
+        className="w-full transition-all duration-300 ease-out"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(12px)",
         }}
-        className="w-full"
       >
         {children}
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      key={manifest.block_id}
-      layout
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{
-        opacity: { duration: 0.3, delay },
-        layout: { duration: 0.35 },
-      }}
+    <div
+      className="min-w-0 min-h-0 transition-opacity duration-300 ease-out"
       style={{
         gridColumn: manifest.grid_position.col,
         gridRow: manifest.grid_position.row,
+        opacity: visible ? 1 : 0,
       }}
-      className="min-w-0 min-h-0"
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

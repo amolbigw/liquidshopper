@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+/* framer-motion removed to avoid SSR hydration issues */
 import { useIntentStore, useActiveFilters } from "@/lib/intent/store";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleCondition, BodyType, FuelType } from "@/lib/intent/types";
@@ -62,19 +62,11 @@ function Section({
           <path d="M3 5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
         </svg>
       </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {open && (
+        <div className="overflow-hidden">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
@@ -338,52 +330,43 @@ export function FilterPanel({ manifest }: FilterPanelProps) {
           Filters {activeFilters.length > 0 && `(${activeFilters.length})`}
         </Button>
 
-        <AnimatePresence>
-          {mobileOpen && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/60 z-40"
-                onClick={() => setMobileOpen(false)}
-              />
-              {/* Drawer */}
-              <motion.div
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                className="fixed inset-x-0 bottom-0 z-50 bg-[#171717] rounded-t-2xl max-h-[85vh] overflow-y-auto p-4"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-white font-semibold">Filters</h2>
-                  <button
-                    type="button"
-                    onClick={() => setMobileOpen(false)}
-                    className="p-2 text-white/40 hover:text-white"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </button>
-                </div>
-                {panelContent}
-                <div className="mt-4">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="w-full"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Show Results
-                  </Button>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/60 z-40"
+              onClick={() => setMobileOpen(false)}
+            />
+            {/* Drawer */}
+            <div
+              className="fixed inset-x-0 bottom-0 z-50 bg-[#171717] rounded-t-2xl max-h-[85vh] overflow-y-auto p-4"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-white font-semibold">Filters</h2>
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  className="p-2 text-white/40 hover:text-white"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+              {panelContent}
+              <div className="mt-4">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Show Results
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

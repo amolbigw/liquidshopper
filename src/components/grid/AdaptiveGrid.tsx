@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { AnimatePresence } from "framer-motion";
 import { useIntentStore } from "@/lib/intent/store";
 import { selectBlocks } from "@/lib/layout/block-selector";
 import type { BlockManifest } from "@/lib/layout/types";
@@ -56,8 +55,10 @@ function renderBlock(manifest: BlockManifest) {
 export function AdaptiveGrid() {
   const intent = useIntentStore((s) => s.intent);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const mq = window.matchMedia("(max-width: 767px)");
     setIsMobile(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
@@ -76,13 +77,11 @@ export function AdaptiveGrid() {
   if (isMobile) {
     return (
       <div className="flex flex-col gap-[var(--grid-gap)] px-3 py-3">
-        <AnimatePresence mode="popLayout">
-          {orderedBlocks.map((m) => (
-            <GridBlock key={m.block_id} manifest={m} isMobile>
-              {renderBlock(m)}
-            </GridBlock>
-          ))}
-        </AnimatePresence>
+        {orderedBlocks.map((m) => (
+          <GridBlock key={m.block_id} manifest={m} isMobile animated={mounted}>
+            {renderBlock(m)}
+          </GridBlock>
+        ))}
       </div>
     );
   }
@@ -95,13 +94,11 @@ export function AdaptiveGrid() {
         gridTemplateRows: "repeat(9, var(--grid-row-height))",
       }}
     >
-      <AnimatePresence mode="popLayout">
-        {orderedBlocks.map((m) => (
-          <GridBlock key={m.block_id} manifest={m} isMobile={false}>
-            {renderBlock(m)}
-          </GridBlock>
-        ))}
-      </AnimatePresence>
+      {orderedBlocks.map((m) => (
+        <GridBlock key={m.block_id} manifest={m} isMobile={false} animated={mounted}>
+          {renderBlock(m)}
+        </GridBlock>
+      ))}
     </div>
   );
 }
