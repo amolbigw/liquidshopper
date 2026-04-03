@@ -5,6 +5,7 @@ import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
 import { getVehicleHeroImage } from "@/lib/inventory/vehicle-images";
+import { useIntentStore } from "@/lib/intent/store";
 import { formatNumber, formatPrice } from "@/lib/utils/format";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -22,15 +23,33 @@ function conditionBadgeVariant(condition: string): "new" | "cpo" | "savings" {
 }
 
 export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroProps) {
-  /* Resolve vehicle from manifest content query or fallback to mock */
+  const intent = useIntentStore((s) => s.intent);
+
+  /* Resolve vehicle from: explicit prop > focused vehicle > intent-filtered match > fallback */
   const v = useMemo(() => {
     if (vehicle) return vehicle;
     const vid = manifest.content_query.vehicle_id;
     if (vid) {
       return MOCK_VEHICLES.find((mv) => mv.vehicle_id === vid) ?? MOCK_VEHICLES[0];
     }
-    return MOCK_VEHICLES[0];
-  }, [vehicle, manifest.content_query.vehicle_id]);
+    // Filter mock vehicles by current intent to show a relevant hero
+    let candidates = [...MOCK_VEHICLES];
+    if (intent.make) candidates = candidates.filter((v) => v.make.toLowerCase() === intent.make!.toLowerCase());
+    if (intent.model) candidates = candidates.filter((v) => v.model.toLowerCase() === intent.model!.toLowerCase());
+    if (intent.body) {
+      const bodyMap: Record<string, string> = { truck: "Truck", suv: "SUV", sedan: "Sedan", coupe: "Coupe", van: "Van", crossover: "Crossover", convertible: "Convertible", wagon: "Wagon", hatchback: "Hatchback" };
+      const mapped = bodyMap[intent.body];
+      if (mapped) candidates = candidates.filter((v) => v.body_style === mapped);
+    }
+    if (intent.condition) {
+      const condMap: Record<string, string> = { new: "New", used: "Used", cpo: "CPO" };
+      const mapped = condMap[intent.condition];
+      if (mapped) candidates = candidates.filter((v) => v.condition === mapped);
+    }
+    if (intent.price_max) candidates = candidates.filter((v) => v.sale_price <= intent.price_max!);
+    if (intent.price_min) candidates = candidates.filter((v) => v.sale_price >= intent.price_min!);
+    return candidates[0] ?? MOCK_VEHICLES[0];
+  }, [vehicle, manifest.content_query.vehicle_id, intent.make, intent.model, intent.body, intent.condition, intent.price_max, intent.price_min]);
 
   const isLarge = size === "large";
   const titleClass = isLarge

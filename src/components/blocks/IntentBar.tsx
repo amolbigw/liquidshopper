@@ -2,6 +2,7 @@
 
 import { useState, useCallback, type FormEvent } from "react";
 import { useIntentStore, useActiveFilters } from "@/lib/intent/store";
+import { parseTextQuery } from "@/lib/signals/text-parser";
 import type { BlockManifest } from "@/lib/layout/types";
 import { Chip } from "@/components/ui/Chip";
 
@@ -18,24 +19,44 @@ export function IntentBar({ manifest }: IntentBarProps) {
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
-      if (!query.trim()) return;
+      const text = query.trim();
+      if (!text) return;
 
+      // Parse the text query into structured intent fields
+      const parsed = parseTextQuery(text);
+
+      // Send the parsed result as the signal payload
+      // The state machine reads these fields directly
       processSignal({
         type: "text_query",
         source: "intent_bar",
         timestamp: Date.now(),
         priority: "highest",
-        payload: { text: query.trim() },
+        payload: {
+          text,
+          condition: parsed.condition,
+          body: parsed.body,
+          make: parsed.make,
+          model: parsed.model,
+          year_min: parsed.year_min,
+          year_max: parsed.year_max,
+          price_min: parsed.price_min,
+          price_max: parsed.price_max,
+          mileage_max: parsed.mileage_max,
+          fuel: parsed.fuel,
+          features: parsed.features,
+          urgency: parsed.urgency,
+          confidence: parsed.confidence,
+        },
       });
 
-      setQuery("");
+      // Don't clear the query — show what was searched
     },
     [query, processSignal],
   );
 
   const handleRemoveFilter = useCallback(
     (filterLabel: string) => {
-      /* Parse the filter label to determine which field to clear. */
       const [key] = filterLabel.split(": ");
       const clearMap: Record<string, Partial<Parameters<typeof updateIntent>[0]>> = {
         Condition: { condition: null },
@@ -59,9 +80,31 @@ export function IntentBar({ manifest }: IntentBarProps) {
     [updateIntent],
   );
 
+  const handleClearAll = useCallback(() => {
+    updateIntent({
+      condition: null,
+      body: null,
+      make: null,
+      model: null,
+      year_min: null,
+      year_max: null,
+      price_min: null,
+      price_max: null,
+      mileage_max: null,
+      fuel: null,
+      drivetrain: null,
+      features: [],
+      confidence: 0,
+      focused_vehicle_id: null,
+      compared_vehicle_ids: [],
+      comparison_mode: false,
+    });
+    setQuery("");
+  }, [updateIntent]);
+
   return (
     <div
-      className="h-full flex flex-col justify-center glass rounded-sm border border-white/[0.06] px-4 md:px-6"
+      className="h-full flex flex-col justify-center glass rounded-sm border border-white/[0.06] px-4 md:px-6 py-3"
       data-block-id={manifest.block_id}
     >
       <form onSubmit={handleSubmit} className="flex items-center gap-3">
@@ -81,9 +124,19 @@ export function IntentBar({ manifest }: IntentBarProps) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="What are you looking for?"
+          placeholder="What are you looking for? Try &quot;used Ford F-150 under $40k&quot;"
           className="flex-1 bg-transparent text-white text-lg placeholder:text-white/30 focus:outline-none"
         />
+
+        {/* Submit button (visible when query has text) */}
+        {query.trim() && (
+          <button
+            type="submit"
+            className="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold uppercase tracking-wider rounded-sm transition-colors"
+          >
+            Search
+          </button>
+        )}
 
         {/* Microphone button */}
         <button
@@ -111,25 +164,10 @@ export function IntentBar({ manifest }: IntentBarProps) {
           ))}
           <button
             type="button"
-            onClick={() =>
-              updateIntent({
-                condition: null,
-                body: null,
-                make: null,
-                model: null,
-                year_min: null,
-                year_max: null,
-                price_min: null,
-                price_max: null,
-                mileage_max: null,
-                fuel: null,
-                drivetrain: null,
-                features: [],
-              })
-            }
+            onClick={handleClearAll}
             className="text-xs text-white/50 hover:text-white whitespace-nowrap transition-colors ml-2"
           >
-            Refine
+            Clear all
           </button>
         </div>
       )}

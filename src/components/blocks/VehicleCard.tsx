@@ -19,17 +19,37 @@ export function VehicleCard({ manifest, vehicle }: VehicleCardProps) {
   const setFocusedVehicle = useIntentStore((s) => s.setFocusedVehicle);
   const addCompareVehicle = useIntentStore((s) => s.addCompareVehicle);
 
+  const intent = useIntentStore((s) => s.intent);
+
   const v = useMemo(() => {
     if (vehicle) return vehicle;
     const vid = manifest.content_query.vehicle_id;
     if (vid) {
       return MOCK_VEHICLES.find((mv) => mv.vehicle_id === vid) ?? null;
     }
-    /* Fallback: pick a mock vehicle based on block_id index */
+    // Filter mock vehicles by current intent
+    let candidates = [...MOCK_VEHICLES];
+    if (intent.make) candidates = candidates.filter((v) => v.make.toLowerCase() === intent.make!.toLowerCase());
+    if (intent.model) candidates = candidates.filter((v) => v.model.toLowerCase() === intent.model!.toLowerCase());
+    if (intent.body) {
+      const bodyMap: Record<string, string> = { truck: "Truck", suv: "SUV", sedan: "Sedan", coupe: "Coupe", van: "Van", crossover: "Crossover", convertible: "Convertible", wagon: "Wagon", hatchback: "Hatchback" };
+      const mapped = bodyMap[intent.body];
+      if (mapped) candidates = candidates.filter((v) => v.body_style === mapped);
+    }
+    if (intent.condition) {
+      const condMap: Record<string, string> = { new: "New", used: "Used", cpo: "CPO" };
+      const mapped = condMap[intent.condition];
+      if (mapped) candidates = candidates.filter((v) => v.condition === mapped);
+    }
+    if (intent.price_max) candidates = candidates.filter((v) => v.sale_price <= intent.price_max!);
+    if (intent.price_min) candidates = candidates.filter((v) => v.sale_price >= intent.price_min!);
+    // Fall back to full list if filters are too restrictive
+    if (candidates.length === 0) candidates = MOCK_VEHICLES;
+    // Pick by block_id index from filtered results
     const match = manifest.block_id.match(/(\d+)$/);
     const idx = match ? parseInt(match[1], 10) : 0;
-    return MOCK_VEHICLES[idx % MOCK_VEHICLES.length] ?? null;
-  }, [vehicle, manifest]);
+    return candidates[idx % candidates.length] ?? null;
+  }, [vehicle, manifest, intent.make, intent.model, intent.body, intent.condition, intent.price_max, intent.price_min]);
 
   const handleView = useCallback(() => {
     if (v) setFocusedVehicle(v.vehicle_id);
