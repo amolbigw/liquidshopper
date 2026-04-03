@@ -171,16 +171,16 @@ html[data-theme="light"] .bg-\[\#171717\] { background-color: #ffffff; }
 html[data-theme="light"] .bg-\[\#0a0a0a\] { background-color: #f5f5f5; }
 html[data-theme="light"] .bg-\[\#1f1f1f\] { background-color: #fafafa; }
 
-/* Text colors */
-html[data-theme="light"] .text-white { color: #171717; }
-html[data-theme="light"] .text-white\/80 { color: rgba(23, 23, 23, 0.8); }
-html[data-theme="light"] .text-white\/70 { color: rgba(23, 23, 23, 0.7); }
-html[data-theme="light"] .text-white\/60 { color: rgba(23, 23, 23, 0.6); }
-html[data-theme="light"] .text-white\/50 { color: rgba(23, 23, 23, 0.5); }
-html[data-theme="light"] .text-white\/40 { color: rgba(23, 23, 23, 0.4); }
-html[data-theme="light"] .text-white\/30 { color: rgba(23, 23, 23, 0.3); }
-html[data-theme="light"] .text-white\/20 { color: rgba(23, 23, 23, 0.2); }
-html[data-theme="light"] .text-white\/15 { color: rgba(23, 23, 23, 0.15); }
+/* Text colors — skip elements inside .preserve-white containers (image overlays) */
+html[data-theme="light"] .text-white:not(.preserve-white .text-white) { color: #171717; }
+html[data-theme="light"] .text-white\/80:not(.preserve-white .text-white\/80) { color: rgba(23, 23, 23, 0.8); }
+html[data-theme="light"] .text-white\/70:not(.preserve-white .text-white\/70) { color: rgba(23, 23, 23, 0.7); }
+html[data-theme="light"] .text-white\/60:not(.preserve-white .text-white\/60) { color: rgba(23, 23, 23, 0.6); }
+html[data-theme="light"] .text-white\/50:not(.preserve-white .text-white\/50) { color: rgba(23, 23, 23, 0.5); }
+html[data-theme="light"] .text-white\/40:not(.preserve-white .text-white\/40) { color: rgba(23, 23, 23, 0.4); }
+html[data-theme="light"] .text-white\/30:not(.preserve-white .text-white\/30) { color: rgba(23, 23, 23, 0.3); }
+html[data-theme="light"] .text-white\/20:not(.preserve-white .text-white\/20) { color: rgba(23, 23, 23, 0.2); }
+html[data-theme="light"] .text-white\/15:not(.preserve-white .text-white\/15) { color: rgba(23, 23, 23, 0.15); }
 
 /* Borders */
 html[data-theme="light"] .border-white\/\[0\.06\] { border-color: rgba(0, 0, 0, 0.08); }

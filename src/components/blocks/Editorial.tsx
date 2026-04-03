@@ -22,7 +22,7 @@ export function Editorial({ manifest }: EditorialProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
       {/* Content */}
-      <div className="relative h-full flex flex-col justify-end p-4">
+      <div className="relative h-full flex flex-col justify-end p-4 preserve-white">
         {/* Category tag */}
         <span className="text-blue-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
           {category}

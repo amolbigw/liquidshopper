@@ -73,8 +73,8 @@ export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroPr
         loading="eager"
       />
 
-      {/* Content */}
-      <div className="relative z-[2] flex flex-col gap-2">
+      {/* Content — preserve-white keeps text white over image in light mode */}
+      <div className="relative z-[2] flex flex-col gap-2 preserve-white">
         {/* Condition badge */}
         <div className="flex items-center gap-2">
           <Badge variant={conditionBadgeVariant(v.condition)}>
