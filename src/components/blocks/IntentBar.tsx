@@ -223,7 +223,7 @@ export function IntentBar({ manifest }: IntentBarProps) {
 
       {/* Dropdown panel */}
       {showDropdown && (
-        <div className="absolute left-0 right-0 top-full z-50 bg-[#171717]/95 backdrop-blur-xl border border-white/[0.08] border-t-0 rounded-b-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
+        <div className="absolute left-0 right-0 top-full z-[100] bg-[#171717]/95 backdrop-blur-xl border border-white/[0.08] border-t-0 rounded-b-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
 
           {/* Recent searches */}
           {recentSearches.length > 0 && (

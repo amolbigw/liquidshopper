@@ -22,6 +22,9 @@ export function GridBlock({ manifest, isMobile, animated, children }: GridBlockP
   const [visible, setVisible] = useState(!animated);
   const delay = staggerDelay(manifest.priority);
 
+  // Intent bar needs overflow-visible for the search dropdown to escape the grid cell
+  const isIntentBar = manifest.block_type === "intent";
+
   useEffect(() => {
     if (!animated) {
       setVisible(true);
@@ -34,7 +37,7 @@ export function GridBlock({ manifest, isMobile, animated, children }: GridBlockP
   if (isMobile) {
     return (
       <div
-        className="w-full transition-all duration-300 ease-out"
+        className={`w-full transition-all duration-300 ease-out ${isIntentBar ? "relative z-40 overflow-visible" : ""}`}
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(12px)",
@@ -44,9 +47,6 @@ export function GridBlock({ manifest, isMobile, animated, children }: GridBlockP
       </div>
     );
   }
-
-  // Intent bar needs overflow-visible for the search dropdown to escape the grid cell
-  const isIntentBar = manifest.block_type === "intent";
 
   return (
     <div
