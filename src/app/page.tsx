@@ -9,6 +9,7 @@ import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
 import { NavBar } from "@/components/NavBar";
 import { AdaptiveGrid } from "@/components/grid/AdaptiveGrid";
 import { PersonalizedSection } from "@/components/blocks/PersonalizedSection";
+import { BottomSection } from "@/components/blocks/BottomSection";
 
 export default function Home() {
   const updateIntent = useIntentStore((s) => s.updateIntent);
@@ -77,12 +78,15 @@ export default function Home() {
           <AdaptiveGrid />
         </div>
 
-        {/* Personalized section on Discovery homepage when user has history */}
+        {/* Homepage: personalized section when user has history */}
         {isDiscovery && hasUserHistory && (
           <div className="max-w-[1440px] mx-auto px-4 mt-8">
             <PersonalizedSection searches={searches} views={views} />
           </div>
         )}
+
+        {/* All non-homepage pages: incentives, recently viewed, recommended */}
+        {!isDiscovery && <BottomSection />}
       </main>
     </>
   );
