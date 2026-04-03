@@ -153,7 +153,7 @@ export function InventoryBrowse() {
       </div>
 
       {/* Vehicle grid with incentive cards mixed in */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
         {gridItems.map((item, idx) => {
           if (item.type === "incentive") {
             const inc = item.incentive;
@@ -183,10 +183,10 @@ export function InventoryBrowse() {
             <button
               key={v.vehicle_id}
               onClick={() => handleVehicleClick(v.vehicle_id)}
-              className="group bg-[#171717] rounded-sm border border-white/[0.06] overflow-hidden hover:border-white/15 transition-all text-left"
+              className="group bg-[#171717] rounded-sm border border-white/[0.06] overflow-hidden hover:border-white/15 transition-all text-left flex flex-col h-full"
             >
               {/* Image */}
-              <div className="relative aspect-[16/10] bg-[#1f1f1f] overflow-hidden">
+              <div className="relative aspect-[16/10] bg-[#1f1f1f] overflow-hidden flex-shrink-0">
                 <img
                   src={getVehicleCardImage(v.make, v.model)}
                   alt={`${v.year} ${v.make} ${v.model}`}
@@ -202,34 +202,27 @@ export function InventoryBrowse() {
               </div>
 
               {/* Content */}
-              <div className="p-3.5">
-                <h3 className="text-white font-bold text-sm mb-0.5">
+              <div className="p-3.5 flex flex-col flex-1">
+                <h3 className="text-white font-bold text-sm mb-0.5 truncate">
                   {v.year} {v.make} {v.model}
                 </h3>
-                <p className="text-white/30 text-[10px] mb-2">{v.trim}</p>
-                <p className="text-white/40 text-xs mb-3">
+                <p className="text-white/30 text-[10px] mb-2 truncate">{v.trim}</p>
+                <p className="text-white/40 text-xs mb-3 truncate">
                   {formatNumber(v.mileage)} mi · {v.drivetrain} · {v.fuel_type} · {v.transmission}
                 </p>
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2 mt-auto">
                   <span className="text-white font-bold text-lg">
                     {formatPrice(v.sale_price)}
                   </span>
                   {v.total_savings > 0 && (
-                    <>
-                      <span className="text-white/20 line-through text-xs">
-                        {formatPrice(v.msrp)}
-                      </span>
-                      <Badge variant="savings" className="text-[10px]">
-                        Save {formatPrice(v.total_savings)}
-                      </Badge>
-                    </>
+                    <Badge variant="savings" className="text-[10px]">
+                      -{(((v.total_savings / v.msrp) * 100) | 0)}%
+                    </Badge>
                   )}
                 </div>
-                {v.est_monthly_payment > 0 && (
-                  <p className="text-white/30 text-[10px] mt-1">
-                    Est. {formatPrice(v.est_monthly_payment)}/mo
-                  </p>
-                )}
+                <p className="text-white/30 text-[10px] mt-1 h-4">
+                  {v.est_monthly_payment > 0 ? `Est. ${formatPrice(v.est_monthly_payment)}/mo` : "\u00A0"}
+                </p>
               </div>
             </button>
           );
