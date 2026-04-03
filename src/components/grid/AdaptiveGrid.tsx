@@ -91,7 +91,7 @@ export function AdaptiveGrid() {
       className="grid gap-[var(--grid-gap)] w-full max-w-[1440px] mx-auto px-4"
       style={{
         gridTemplateColumns: "repeat(9, 1fr)",
-        gridTemplateRows: "repeat(9, var(--grid-row-height))",
+        gridTemplateRows: "auto repeat(8, minmax(80px, auto))",
       }}
     >
       {orderedBlocks.map((m) => (

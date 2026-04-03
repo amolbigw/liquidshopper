@@ -47,7 +47,7 @@ export function GridBlock({ manifest, isMobile, animated, children }: GridBlockP
 
   return (
     <div
-      className="min-w-0 min-h-0 transition-opacity duration-300 ease-out"
+      className="min-w-0 min-h-0 overflow-hidden transition-opacity duration-300 ease-out"
       style={{
         gridColumn: manifest.grid_position.col,
         gridRow: manifest.grid_position.row,

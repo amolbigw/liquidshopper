@@ -7,7 +7,7 @@
 
 :root {
   /* Grid system */
-  --grid-row-height: 52px;
+  --grid-row-height: minmax(60px, auto);
   --grid-gap: 6px;
   --grid-cols: 9;
 
@@ -36,7 +36,7 @@
 
 @media (max-width: 767px) {
   :root {
-    --grid-row-height: 44px;
+    --grid-row-height: minmax(48px, auto);
     --grid-gap: 4px;
   }
 }
