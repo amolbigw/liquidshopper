@@ -5,6 +5,7 @@ import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
 import { useIntentStore } from "@/lib/intent/store";
+import { formatNumber, formatPrice } from "@/lib/utils/format";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
@@ -76,14 +77,14 @@ export function VehicleCard({ manifest, vehicle }: VehicleCardProps) {
 
         {/* Specs row */}
         <p className="text-white/40 text-xs truncate">
-          {v.mileage.toLocaleString()} mi &middot; {v.drivetrain} &middot;{" "}
+          {formatNumber(v.mileage)} mi &middot; {v.drivetrain} &middot;{" "}
           {v.fuel_type} &middot; {v.transmission}
         </p>
 
         {/* Price */}
         <div className="flex items-baseline gap-2 mt-auto pt-2">
           <span className="text-white font-bold text-lg">
-            ${v.sale_price.toLocaleString()}
+            {formatPrice(v.sale_price)}
           </span>
           {v.total_savings > 0 && (
             <Badge variant="savings" className="text-[10px]">

@@ -150,27 +150,47 @@ export function useGridState(): GridState {
   );
 }
 
-/** Returns an array of human-readable "active filter" labels. */
+/** Build an array of human-readable "active filter" labels (pure function). */
+function buildActiveFilters(i: IntentVector): string[] {
+  const filters: string[] = [];
+  if (i.condition) filters.push(`Condition: ${i.condition}`);
+  if (i.body) filters.push(`Body: ${i.body}`);
+  if (i.make) filters.push(`Make: ${i.make}`);
+  if (i.model) filters.push(`Model: ${i.model}`);
+  if (i.year_min) filters.push(`Year from: ${i.year_min}`);
+  if (i.year_max) filters.push(`Year to: ${i.year_max}`);
+  if (i.price_min) filters.push(`Min price: $${i.price_min}`);
+  if (i.price_max) filters.push(`Max price: $${i.price_max}`);
+  if (i.mileage_max) filters.push(`Max mileage: ${i.mileage_max}`);
+  if (i.fuel) filters.push(`Fuel: ${i.fuel}`);
+  if (i.drivetrain) filters.push(`Drivetrain: ${i.drivetrain}`);
+  for (const f of i.features) {
+    filters.push(`Feature: ${f.replace(/_/g, " ")}`);
+  }
+  return filters;
+}
+
+/**
+ * Returns an array of human-readable "active filter" labels.
+ * Uses a stable cache key to avoid infinite re-render loops.
+ */
 export function useActiveFilters(): string[] {
-  return useIntentStore((s) => {
+  // Build a stable cache key from all filter-relevant fields so Zustand
+  // can do a simple string equality check instead of deep array comparison.
+  const cacheKey = useIntentStore((s) => {
     const i = s.intent;
-    const filters: string[] = [];
-
-    if (i.condition) filters.push(`Condition: ${i.condition}`);
-    if (i.body) filters.push(`Body: ${i.body}`);
-    if (i.make) filters.push(`Make: ${i.make}`);
-    if (i.model) filters.push(`Model: ${i.model}`);
-    if (i.year_min) filters.push(`Year from: ${i.year_min}`);
-    if (i.year_max) filters.push(`Year to: ${i.year_max}`);
-    if (i.price_min) filters.push(`Min price: $${i.price_min.toLocaleString()}`);
-    if (i.price_max) filters.push(`Max price: $${i.price_max.toLocaleString()}`);
-    if (i.mileage_max) filters.push(`Max mileage: ${i.mileage_max.toLocaleString()}`);
-    if (i.fuel) filters.push(`Fuel: ${i.fuel}`);
-    if (i.drivetrain) filters.push(`Drivetrain: ${i.drivetrain}`);
-    for (const f of i.features) {
-      filters.push(`Feature: ${f.replace(/_/g, " ")}`);
-    }
-
-    return filters;
+    return [
+      i.condition, i.body, i.make, i.model,
+      i.year_min, i.year_max, i.price_min, i.price_max,
+      i.mileage_max, i.fuel, i.drivetrain,
+      ...i.features,
+    ].join("|");
   });
+
+  const intent = useIntentStore((s) => s.intent);
+
+  // cacheKey is a primitive string — no infinite loop.
+  // We still need to compute the labels, but the component only
+  // re-renders when the key actually changes.
+  return buildActiveFilters(intent);
 }

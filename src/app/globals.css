@@ -41,15 +41,7 @@
   }
 }
 
-@theme inline {
-  --color-background: var(--bg-primary);
-  --color-foreground: var(--text-primary);
-  --color-surface: var(--bg-surface);
-  --color-surface-elevated: var(--bg-surface-elevated);
-  --color-accent: var(--accent-blue);
-  --color-accent-hover: var(--accent-blue-hover);
-  --font-sans: var(--font-inter);
-}
+/* Theme tokens removed - using CSS vars directly */
 
 /* ---------------------------------------------------------------------------
    Base Resets & Body

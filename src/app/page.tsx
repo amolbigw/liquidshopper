@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIntentStore } from "@/lib/intent/store";
 import { parseUTMParams, mapUTMToIntent } from "@/lib/signals/utm-parser";
 import { readIntentFromURL, syncURLWithIntent } from "@/lib/utils/url-state";
@@ -10,61 +10,39 @@ export default function Home() {
   const updateIntent = useIntentStore((s) => s.updateIntent);
   const intent = useIntentStore((s) => s.intent);
   const initialized = useRef(false);
+  const [mounted, setMounted] = useState(false);
 
-  /* -------------------------------------------------------------------
-   * On mount: hydrate intent from URL params, UTMs, session, or cookie
-   * ------------------------------------------------------------------- */
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
-    if (initialized.current) return;
+    if (!mounted || initialized.current) return;
     initialized.current = true;
-
-    /* 1. Try to read intent-specific params from the URL (deep link). */
     const urlIntent = readIntentFromURL();
-    if (urlIntent && Object.keys(urlIntent).length > 0) {
-      updateIntent(urlIntent);
-      return;
-    }
-
-    /* 2. Try to parse UTM parameters for ad-sourced traffic. */
+    if (urlIntent && Object.keys(urlIntent).length > 0) { updateIntent(urlIntent); return; }
     const utmParams = parseUTMParams(window.location.href);
     if (utmParams) {
       const utmIntent = mapUTMToIntent(utmParams);
-      if (Object.keys(utmIntent).length > 0) {
-        updateIntent(utmIntent);
-        return;
-      }
+      if (Object.keys(utmIntent).length > 0) { updateIntent(utmIntent); return; }
     }
-
-    /* 3. Fallback: session storage for returning visitors. */
     try {
       const stored = sessionStorage.getItem("ls_intent");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && typeof parsed === "object") {
-          updateIntent(parsed);
-          return;
-        }
-      }
-    } catch {
-      /* Ignore parse errors on corrupt session data. */
-    }
+      if (stored) { const p = JSON.parse(stored); if (p && typeof p === "object") { updateIntent(p); return; } }
+    } catch { /* ignore */ }
+  }, [mounted, updateIntent]);
 
-    /* 4. No signals: stay in Discovery (state 0). */
-  }, [updateIntent]);
-
-  /* -------------------------------------------------------------------
-   * Sync URL + session when intent changes
-   * ------------------------------------------------------------------- */
   useEffect(() => {
+    if (!mounted) return;
     syncURLWithIntent(intent);
+    try { const { signal_history, ...r } = intent; sessionStorage.setItem("ls_intent", JSON.stringify(r)); } catch { /* */ }
+  }, [intent, mounted]);
 
-    try {
-      const { signal_history, ...serializable } = intent;
-      sessionStorage.setItem("ls_intent", JSON.stringify(serializable));
-    } catch {
-      /* Session storage might be unavailable (private browsing, quota). */
-    }
-  }, [intent]);
+  if (!mounted) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-white/20 border-t-blue-500 rounded-full animate-spin" />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen py-2 md:py-4">

@@ -4,13 +4,14 @@ import { useMemo } from "react";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
+import { formatPrice } from "@/lib/utils/format";
 
 interface PriceBreakdownProps {
   manifest: BlockManifest;
 }
 
 function formatCurrency(n: number): string {
-  return `$${n.toLocaleString()}`;
+  return formatPrice(n);
 }
 
 export function PriceBreakdown({ manifest }: PriceBreakdownProps) {

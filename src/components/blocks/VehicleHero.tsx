@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
+import { formatNumber, formatPrice } from "@/lib/utils/format";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
@@ -86,21 +87,21 @@ export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroPr
 
         {/* Mileage */}
         <p className="text-white/40 text-sm">
-          {v.mileage.toLocaleString()} miles
+          {formatNumber(v.mileage)} miles
         </p>
 
         {/* Price */}
         <div className="flex items-baseline gap-3 mt-1">
           <span className="text-2xl md:text-3xl font-bold text-white">
-            ${v.sale_price.toLocaleString()}
+            {formatPrice(v.sale_price)}
           </span>
           {v.total_savings > 0 && (
             <>
               <span className="text-white/30 line-through text-sm">
-                ${v.msrp.toLocaleString()}
+                {formatPrice(v.msrp)}
               </span>
               <Badge variant="savings">
-                Save ${v.total_savings.toLocaleString()}
+                Save {formatPrice(v.total_savings)}
               </Badge>
             </>
           )}

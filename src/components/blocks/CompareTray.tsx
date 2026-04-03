@@ -5,6 +5,7 @@ import { useIntentStore } from "@/lib/intent/store";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
+import { formatNumber, formatPrice } from "@/lib/utils/format";
 import { Button } from "@/components/ui/Button";
 
 interface CompareTrayProps {
@@ -35,7 +36,7 @@ function VehicleThumb({ vehicle }: { vehicle: VehicleRecord }) {
           {vehicle.year} {vehicle.make} {vehicle.model}
         </p>
         <p className="text-white/40 text-[10px]">
-          ${vehicle.sale_price.toLocaleString()}
+          {formatPrice(vehicle.sale_price)}
         </p>
       </div>
     </div>
@@ -94,7 +95,7 @@ export function CompareTray({ manifest }: CompareTrayProps) {
           <div className="text-center">
             <p className="text-white/30">Price Diff</p>
             <p className="text-white/70 font-semibold">
-              ${Math.abs(vehicles[0].sale_price - vehicles[1].sale_price).toLocaleString()}
+              {formatPrice(Math.abs(vehicles[0].sale_price - vehicles[1].sale_price))}
             </p>
           </div>
           <div className="text-center">
