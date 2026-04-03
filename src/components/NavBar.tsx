@@ -1,7 +1,7 @@
 "use client";
 
-import { useIntentStore } from "@/lib/intent/store";
-import { createDefaultIntentVector } from "@/lib/intent/store";
+import { useIntentStore, createDefaultIntentVector } from "@/lib/intent/store";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function NavBar() {
   const updateIntent = useIntentStore((s) => s.updateIntent);
@@ -39,20 +39,21 @@ export function NavBar() {
         </div>
       </button>
 
-      {/* Right side — minimal nav links */}
-      <div className="hidden md:flex items-center gap-6">
-        <span className="text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
+      {/* Right side — nav links + theme toggle */}
+      <div className="flex items-center gap-4 md:gap-6">
+        <span className="hidden md:inline text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
           Inventory
         </span>
-        <span className="text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
+        <span className="hidden md:inline text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
           Finance
         </span>
-        <span className="text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
+        <span className="hidden md:inline text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
           About
         </span>
-        <span className="text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
+        <span className="hidden md:inline text-white/40 text-xs tracking-wider uppercase hover:text-white/70 cursor-pointer transition-colors">
           Contact
         </span>
+        <ThemeToggle />
       </div>
     </nav>
   );

@@ -41,7 +41,40 @@
   }
 }
 
-/* Theme tokens removed - using CSS vars directly */
+/* ---------------------------------------------------------------------------
+   Light Mode
+   --------------------------------------------------------------------------- */
+
+html[data-theme="light"] {
+  --bg-primary: #f5f5f5;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #fafafa;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --text-primary: #171717;
+  --text-secondary: #525252;
+  --text-tertiary: #a3a3a3;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-medium: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+html[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+html[data-theme="light"] * {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+html[data-theme="light"] ::selection {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #171717;
+}
 
 /* ---------------------------------------------------------------------------
    Base Resets & Body
@@ -116,3 +149,57 @@ body {
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
 }
+
+/* ---------------------------------------------------------------------------
+   Theme-aware overrides for hardcoded dark-mode colors
+   These swap all #171717/#0a0a0a/#1f1f1f backgrounds and white text
+   to light-mode equivalents when data-theme="light" is set.
+   --------------------------------------------------------------------------- */
+
+html[data-theme="light"] .bg-\[\#171717\] { background-color: #ffffff; }
+html[data-theme="light"] .bg-\[\#0a0a0a\] { background-color: #f5f5f5; }
+html[data-theme="light"] .bg-\[\#1f1f1f\] { background-color: #fafafa; }
+
+/* Text colors */
+html[data-theme="light"] .text-white { color: #171717; }
+html[data-theme="light"] .text-white\/80 { color: rgba(23, 23, 23, 0.8); }
+html[data-theme="light"] .text-white\/70 { color: rgba(23, 23, 23, 0.7); }
+html[data-theme="light"] .text-white\/60 { color: rgba(23, 23, 23, 0.6); }
+html[data-theme="light"] .text-white\/50 { color: rgba(23, 23, 23, 0.5); }
+html[data-theme="light"] .text-white\/40 { color: rgba(23, 23, 23, 0.4); }
+html[data-theme="light"] .text-white\/30 { color: rgba(23, 23, 23, 0.3); }
+html[data-theme="light"] .text-white\/20 { color: rgba(23, 23, 23, 0.2); }
+html[data-theme="light"] .text-white\/15 { color: rgba(23, 23, 23, 0.15); }
+
+/* Borders */
+html[data-theme="light"] .border-white\/\[0\.06\] { border-color: rgba(0, 0, 0, 0.08); }
+html[data-theme="light"] .border-white\/\[0\.08\] { border-color: rgba(0, 0, 0, 0.1); }
+html[data-theme="light"] .border-white\/10 { border-color: rgba(0, 0, 0, 0.1); }
+html[data-theme="light"] .border-white\/15 { border-color: rgba(0, 0, 0, 0.12); }
+html[data-theme="light"] .border-white\/20 { border-color: rgba(0, 0, 0, 0.15); }
+
+/* Hover backgrounds */
+html[data-theme="light"] .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.04); }
+html[data-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.06); }
+html[data-theme="light"] .bg-white\/5 { background-color: rgba(0, 0, 0, 0.04); }
+html[data-theme="light"] .bg-white\/\[0\.02\] { background-color: rgba(0, 0, 0, 0.02); }
+
+/* Placeholder text */
+html[data-theme="light"] .placeholder\:text-white\/30::placeholder { color: rgba(23, 23, 23, 0.35); }
+
+/* Glass in light mode */
+html[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Gradients */
+html[data-theme="light"] .from-\[\#171717\] { --tw-gradient-from: #ffffff; }
+html[data-theme="light"] .to-\[\#0a0a0a\] { --tw-gradient-to: #f5f5f5; }
+html[data-theme="light"] .from-black\/80 { --tw-gradient-from: rgba(0, 0, 0, 0.5); }
+html[data-theme="light"] .via-black\/30 { --tw-gradient-via: rgba(0, 0, 0, 0.15); }
+html[data-theme="light"] .from-black\/70 { --tw-gradient-from: rgba(0, 0, 0, 0.4); }
+html[data-theme="light"] .via-black\/40 { --tw-gradient-via: rgba(0, 0, 0, 0.2); }
+
+/* SVG car outlines */
+html[data-theme="light"] .text-white\/\[0\.06\] { color: rgba(0, 0, 0, 0.08); }
+html[data-theme="light"] .text-white\/\[0\.08\] { color: rgba(0, 0, 0, 0.1); }
