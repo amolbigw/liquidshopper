@@ -83,38 +83,58 @@ export function FilterPanel({ manifest }: FilterPanelProps) {
     m.toLowerCase().includes(makeSearch.toLowerCase()),
   );
 
+  /** Compute minimum confidence based on how many filters are active */
+  const computeConfidence = useCallback(
+    (overrides: Partial<typeof intent> = {}) => {
+      const merged = { ...intent, ...overrides };
+      let conf = 0;
+      if (merged.condition) conf += 0.10;
+      if (merged.body) conf += 0.15;
+      if (merged.make) conf += 0.15;
+      if (merged.model) conf += 0.15;
+      if (merged.price_min != null || merged.price_max != null) conf += 0.10;
+      if (merged.fuel) conf += 0.05;
+      if (merged.year_min != null || merged.year_max != null) conf += 0.05;
+      if (merged.mileage_max != null) conf += 0.05;
+      return Math.min(conf, 0.55); // Cap at broad intent level for filters
+    },
+    [intent],
+  );
+
   const handleCondition = useCallback(
     (c: VehicleCondition) => {
-      updateIntent({ condition: intent.condition === c ? null : c });
+      const newVal = intent.condition === c ? null : c;
+      const conf = computeConfidence({ condition: newVal });
+      updateIntent({ condition: newVal, confidence: conf });
     },
-    [intent.condition, updateIntent],
+    [intent.condition, updateIntent, computeConfidence],
   );
 
   const handleBody = useCallback(
     (b: BodyType) => {
-      processSignal({
-        type: "filter_apply",
-        source: "filter_panel",
-        timestamp: Date.now(),
-        priority: "high",
-        payload: { body: b },
-      });
+      const newVal = intent.body === b ? null : b;
+      const conf = computeConfidence({ body: newVal });
+      updateIntent({ body: newVal, confidence: conf });
     },
-    [processSignal],
+    [intent.body, updateIntent, computeConfidence],
   );
 
   const handleMake = useCallback(
     (make: string) => {
-      updateIntent({ make: intent.make === make ? null : make });
+      const newVal = intent.make === make ? null : make;
+      const conf = computeConfidence({ make: newVal });
+      updateIntent({ make: newVal, model: newVal ? intent.model : null, confidence: conf });
     },
-    [intent.make, updateIntent],
+    [intent.make, intent.model, updateIntent, computeConfidence],
   );
 
   const handleFuel = useCallback(
     (fuel: FuelType) => {
-      updateIntent({ fuel: intent.fuel === fuel ? null : fuel });
+      const newVal = intent.fuel === fuel ? null : fuel;
+      const conf = computeConfidence({ fuel: newVal });
+      updateIntent({ fuel: newVal, confidence: conf });
     },
-    [intent.fuel, updateIntent],
+    [intent.fuel, updateIntent, computeConfidence],
   );
 
   const handleClearAll = useCallback(() => {
@@ -131,6 +151,7 @@ export function FilterPanel({ manifest }: FilterPanelProps) {
       fuel: null,
       drivetrain: null,
       features: [],
+      confidence: 0,
     });
   }, [updateIntent]);
 
@@ -151,7 +172,19 @@ export function FilterPanel({ manifest }: FilterPanelProps) {
           </div>
           <div className="flex flex-wrap gap-1">
             {activeFilters.map((label) => (
-              <Chip key={label} label={label} onRemove={() => {}} className="text-[10px]" />
+              <Chip key={label} label={label} onRemove={() => {
+                const [key] = label.split(": ");
+                const clearMap: Record<string, Partial<typeof intent>> = {
+                  Condition: { condition: null }, Body: { body: null },
+                  Make: { make: null, model: null }, Model: { model: null },
+                  "Year from": { year_min: null }, "Year to": { year_max: null },
+                  "Min price": { price_min: null }, "Max price": { price_max: null },
+                  "Max mileage": { mileage_max: null }, Fuel: { fuel: null },
+                  Drivetrain: { drivetrain: null },
+                };
+                const update = clearMap[key];
+                if (update) updateIntent(update);
+              }} className="text-[10px]" />
             ))}
           </div>
         </div>
