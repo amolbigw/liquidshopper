@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { useIntentStore } from "@/lib/intent/store";
 import { parseUTMParams, mapUTMToIntent } from "@/lib/signals/utm-parser";
 import { readIntentFromURL, syncURLWithIntent } from "@/lib/utils/url-state";
+import { saveVehicleView, getSearchHistory, getViewHistory } from "@/lib/utils/history";
+import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
+import { NavBar } from "@/components/NavBar";
 import { AdaptiveGrid } from "@/components/grid/AdaptiveGrid";
+import { PersonalizedSection } from "@/components/blocks/PersonalizedSection";
 
 export default function Home() {
   const updateIntent = useIntentStore((s) => s.updateIntent);
@@ -30,11 +34,26 @@ export default function Home() {
     } catch { /* ignore */ }
   }, [mounted, updateIntent]);
 
+  // Sync URL + session when intent changes
   useEffect(() => {
     if (!mounted) return;
     syncURLWithIntent(intent);
     try { const { signal_history, ...r } = intent; sessionStorage.setItem("ls_intent", JSON.stringify(r)); } catch { /* */ }
   }, [intent, mounted]);
+
+  // Track vehicle views in history
+  useEffect(() => {
+    if (!mounted || !intent.focused_vehicle_id) return;
+    const vehicle = MOCK_VEHICLES.find((v) => v.vehicle_id === intent.focused_vehicle_id);
+    if (vehicle) {
+      saveVehicleView({
+        vehicleId: vehicle.vehicle_id,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+      });
+    }
+  }, [mounted, intent.focused_vehicle_id]);
 
   if (!mounted) {
     return (
@@ -44,9 +63,27 @@ export default function Home() {
     );
   }
 
+  // Check if we're in Discovery state (no active intent)
+  const isDiscovery = intent.confidence <= 0.25;
+  const searches = getSearchHistory();
+  const views = getViewHistory();
+  const hasUserHistory = searches.length > 0 || views.length > 0;
+
   return (
-    <main className="min-h-screen py-2 md:py-4">
-      <AdaptiveGrid />
-    </main>
+    <>
+      <NavBar />
+      <main className="min-h-screen pb-4">
+        <div className="px-2 md:px-4">
+          <AdaptiveGrid />
+        </div>
+
+        {/* Personalized section on Discovery homepage when user has history */}
+        {isDiscovery && hasUserHistory && (
+          <div className="max-w-[1440px] mx-auto px-4 mt-8">
+            <PersonalizedSection searches={searches} views={views} />
+          </div>
+        )}
+      </main>
+    </>
   );
 }

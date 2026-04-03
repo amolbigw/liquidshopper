@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "mkdir -p .next/server && echo '{}' > .next/server/pages-manifest.json && echo '{\"version\":1,\"middleware\":{},\"functions\":{},\"sortedMiddleware\":[]}' > .next/server/middleware-manifest.json && next build",
+    "prebuild": "mkdir -p .next/server && echo '{}' > .next/server/pages-manifest.json && echo '{\"version\":1,\"middleware\":{},\"functions\":{},\"sortedMiddleware\":[]}' > .next/server/middleware-manifest.json",
+    "build": "next build",
+    "postbuild": "test -f .next/server/pages-manifest.json || echo '{}' > .next/server/pages-manifest.json",
     "start": "next start",
     "lint": "eslint"
   },

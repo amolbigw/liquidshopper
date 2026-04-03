@@ -3,6 +3,7 @@
 import { useState, useCallback, type FormEvent } from "react";
 import { useIntentStore, useActiveFilters } from "@/lib/intent/store";
 import { parseTextQuery } from "@/lib/signals/text-parser";
+import { saveSearch } from "@/lib/utils/history";
 import type { BlockManifest } from "@/lib/layout/types";
 import { Chip } from "@/components/ui/Chip";
 
@@ -50,7 +51,14 @@ export function IntentBar({ manifest }: IntentBarProps) {
         },
       });
 
-      // Don't clear the query — show what was searched
+      // Save to search history for personalization
+      saveSearch({
+        query: text,
+        make: parsed.make,
+        model: parsed.model,
+        body: parsed.body as string | null,
+        condition: parsed.condition,
+      });
     },
     [query, processSignal],
   );
