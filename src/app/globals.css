@@ -162,25 +162,39 @@ body {
 .placeholder\:text-white\/30::placeholder { color: rgba(255, 255, 255, 0.45); }
 
 /* ---------------------------------------------------------------------------
-   Theme-aware overrides for hardcoded dark-mode colors
-   These swap all #171717/#0a0a0a/#1f1f1f backgrounds and white text
-   to light-mode equivalents when data-theme="light" is set.
+   LIGHT MODE — Comprehensive theme overrides
+   Elements inside .preserve-white stay white (image overlays).
    --------------------------------------------------------------------------- */
 
+/* Backgrounds */
 html[data-theme="light"] .bg-\[\#171717\] { background-color: #ffffff; }
 html[data-theme="light"] .bg-\[\#0a0a0a\] { background-color: #f5f5f5; }
-html[data-theme="light"] .bg-\[\#1f1f1f\] { background-color: #fafafa; }
+html[data-theme="light"] .bg-\[\#1f1f1f\] { background-color: #f0f0f0; }
+html[data-theme="light"] .bg-white\/\[0\.04\] { background-color: rgba(0, 0, 0, 0.03); }
+html[data-theme="light"] .bg-white\/\[0\.03\] { background-color: rgba(0, 0, 0, 0.02); }
+html[data-theme="light"] .bg-white\/\[0\.06\] { background-color: rgba(0, 0, 0, 0.03); }
+html[data-theme="light"] .bg-white\/5 { background-color: rgba(0, 0, 0, 0.04); }
+html[data-theme="light"] .bg-white\/\[0\.02\] { background-color: rgba(0, 0, 0, 0.02); }
+html[data-theme="light"] .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.05); }
+html[data-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.06); }
+html[data-theme="light"] .hover\:bg-white\/\[0\.04\]:hover { background-color: rgba(0, 0, 0, 0.04); }
+html[data-theme="light"] .hover\:bg-white\/\[0\.06\]:hover { background-color: rgba(0, 0, 0, 0.05); }
 
-/* Text colors — skip elements inside .preserve-white containers (image overlays) */
-html[data-theme="light"] .text-white:not(.preserve-white .text-white) { color: #171717; }
-html[data-theme="light"] .text-white\/80:not(.preserve-white .text-white\/80) { color: rgba(23, 23, 23, 0.8); }
-html[data-theme="light"] .text-white\/70:not(.preserve-white .text-white\/70) { color: rgba(23, 23, 23, 0.7); }
-html[data-theme="light"] .text-white\/60:not(.preserve-white .text-white\/60) { color: rgba(23, 23, 23, 0.6); }
-html[data-theme="light"] .text-white\/50:not(.preserve-white .text-white\/50) { color: rgba(23, 23, 23, 0.5); }
-html[data-theme="light"] .text-white\/40:not(.preserve-white .text-white\/40) { color: rgba(23, 23, 23, 0.4); }
-html[data-theme="light"] .text-white\/30:not(.preserve-white .text-white\/30) { color: rgba(23, 23, 23, 0.3); }
-html[data-theme="light"] .text-white\/20:not(.preserve-white .text-white\/20) { color: rgba(23, 23, 23, 0.2); }
-html[data-theme="light"] .text-white\/15:not(.preserve-white .text-white\/15) { color: rgba(23, 23, 23, 0.15); }
+/* Text — preserve-white elements keep their white text */
+html[data-theme="light"] .text-white:not(.preserve-white .text-white) { color: #1a1a1a; }
+html[data-theme="light"] .text-white\/80:not(.preserve-white .text-white\/80) { color: rgba(26, 26, 26, 0.85); }
+html[data-theme="light"] .text-white\/70:not(.preserve-white .text-white\/70) { color: rgba(26, 26, 26, 0.75); }
+html[data-theme="light"] .text-white\/60:not(.preserve-white .text-white\/60) { color: rgba(26, 26, 26, 0.65); }
+html[data-theme="light"] .text-white\/50:not(.preserve-white .text-white\/50) { color: rgba(26, 26, 26, 0.55); }
+html[data-theme="light"] .text-white\/40:not(.preserve-white .text-white\/40) { color: rgba(26, 26, 26, 0.5); }
+html[data-theme="light"] .text-white\/30:not(.preserve-white .text-white\/30) { color: rgba(26, 26, 26, 0.4); }
+html[data-theme="light"] .text-white\/25:not(.preserve-white .text-white\/25) { color: rgba(26, 26, 26, 0.35); }
+html[data-theme="light"] .text-white\/20:not(.preserve-white .text-white\/20) { color: rgba(26, 26, 26, 0.3); }
+html[data-theme="light"] .text-white\/15:not(.preserve-white .text-white\/15) { color: rgba(26, 26, 26, 0.2); }
+
+/* SVG icon colors */
+html[data-theme="light"] .text-white\/\[0\.06\]:not(.preserve-white .text-white\/\[0\.06\]) { color: rgba(0, 0, 0, 0.1); }
+html[data-theme="light"] .text-white\/\[0\.08\]:not(.preserve-white .text-white\/\[0\.08\]) { color: rgba(0, 0, 0, 0.12); }
 
 /* Borders */
 html[data-theme="light"] .border-white\/\[0\.06\] { border-color: rgba(0, 0, 0, 0.08); }
@@ -188,29 +202,57 @@ html[data-theme="light"] .border-white\/\[0\.08\] { border-color: rgba(0, 0, 0, 
 html[data-theme="light"] .border-white\/10 { border-color: rgba(0, 0, 0, 0.1); }
 html[data-theme="light"] .border-white\/15 { border-color: rgba(0, 0, 0, 0.12); }
 html[data-theme="light"] .border-white\/20 { border-color: rgba(0, 0, 0, 0.15); }
-
-/* Hover backgrounds */
-html[data-theme="light"] .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.04); }
-html[data-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.06); }
-html[data-theme="light"] .bg-white\/5 { background-color: rgba(0, 0, 0, 0.04); }
-html[data-theme="light"] .bg-white\/\[0\.02\] { background-color: rgba(0, 0, 0, 0.02); }
+html[data-theme="light"] .border-white\/\[0\.04\] { border-color: rgba(0, 0, 0, 0.06); }
 
 /* Placeholder text */
-html[data-theme="light"] .placeholder\:text-white\/30::placeholder { color: rgba(23, 23, 23, 0.35); }
+html[data-theme="light"] .placeholder\:text-white\/20::placeholder { color: rgba(26, 26, 26, 0.35); }
+html[data-theme="light"] .placeholder\:text-white\/30::placeholder { color: rgba(26, 26, 26, 0.4); }
 
-/* Glass in light mode */
+/* Glass */
 html[data-theme="light"] .glass {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
-/* Gradients */
+/* Search bar specific */
+html[data-theme="light"] .shadow-\[0_0_20px_rgba\(59\,130\,246\,0\.04\)\] { box-shadow: 0 0 20px rgba(0, 0, 0, 0.04); }
+html[data-theme="light"] .shadow-\[0_0_30px_rgba\(59\,130\,246\,0\.06\)\] { box-shadow: 0 0 30px rgba(0, 0, 0, 0.06); }
+html[data-theme="light"] .shadow-\[0_0_30px_rgba\(59\,130\,246\,0\.1\)\] { box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08); }
+html[data-theme="light"] .shadow-\[0_20px_60px_rgba\(0\,0\,0\,0\.5\)\] { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); }
+
+/* Search dropdown in light mode */
+html[data-theme="light"] .bg-\[\#171717\]\/95 { background-color: rgba(255, 255, 255, 0.97); }
+
+/* Divider line */
+html[data-theme="light"] .bg-white\/\[0\.08\] { background-color: rgba(0, 0, 0, 0.08); }
+
+/* Gradients on editorial / promo blocks */
 html[data-theme="light"] .from-\[\#171717\] { --tw-gradient-from: #ffffff; }
 html[data-theme="light"] .to-\[\#0a0a0a\] { --tw-gradient-to: #f5f5f5; }
-html[data-theme="light"] .from-black\/80 { --tw-gradient-from: rgba(0, 0, 0, 0.5); }
-html[data-theme="light"] .via-black\/30 { --tw-gradient-via: rgba(0, 0, 0, 0.15); }
-html[data-theme="light"] .from-black\/70 { --tw-gradient-from: rgba(0, 0, 0, 0.4); }
-html[data-theme="light"] .via-black\/40 { --tw-gradient-via: rgba(0, 0, 0, 0.2); }
+html[data-theme="light"] .from-blue-900\/20 { --tw-gradient-from: rgba(30, 58, 138, 0.08); }
+html[data-theme="light"] .from-blue-600\/10 { --tw-gradient-from: rgba(37, 99, 235, 0.06); }
+html[data-theme="light"] .from-blue-600\/8 { --tw-gradient-from: rgba(37, 99, 235, 0.05); }
+html[data-theme="light"] .via-blue-500\/5 { --tw-gradient-via: rgba(59, 130, 246, 0.03); }
+html[data-theme="light"] .from-blue-600\/15 { --tw-gradient-from: rgba(37, 99, 235, 0.08); }
+html[data-theme="light"] .to-blue-900\/10 { --tw-gradient-to: rgba(30, 58, 138, 0.04); }
+html[data-theme="light"] .from-green-600\/15 { --tw-gradient-from: rgba(22, 163, 74, 0.08); }
+html[data-theme="light"] .to-green-900\/10 { --tw-gradient-to: rgba(20, 83, 45, 0.04); }
+html[data-theme="light"] .from-yellow-600\/10 { --tw-gradient-from: rgba(202, 138, 4, 0.06); }
+html[data-theme="light"] .to-yellow-900\/5 { --tw-gradient-to: rgba(113, 63, 18, 0.02); }
 
-/* SVG car outlines */
-html[data-theme="light"] .text-white\/\[0\.06\] { color: rgba(0, 0, 0, 0.08); }
-html[data-theme="light"] .text-white\/\[0\.08\] { color: rgba(0, 0, 0, 0.1); }
+/* Badge variants — keep readable in light mode */
+html[data-theme="light"] .bg-blue-500\/20 { background-color: rgba(59, 130, 246, 0.15); }
+html[data-theme="light"] .bg-green-500\/20 { background-color: rgba(34, 197, 94, 0.15); }
+html[data-theme="light"] .bg-red-500\/20 { background-color: rgba(239, 68, 68, 0.15); }
+html[data-theme="light"] .bg-yellow-500\/20 { background-color: rgba(234, 179, 8, 0.15); }
+
+/* Scrollbar */
+html[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); }
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.25); }
+html[data-theme="light"] * { scrollbar-color: rgba(0, 0, 0, 0.15) transparent; }
+
+/* Selection */
+html[data-theme="light"] ::selection { background-color: rgba(59, 130, 246, 0.2); color: #1a1a1a; }
+
+/* Kbd shortcuts */
+html[data-theme="light"] kbd { background-color: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.1); }
