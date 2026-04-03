@@ -82,6 +82,20 @@ export default function Home() {
     }
   }, [intent.confidence, intent.focused_vehicle_id]);
 
+  // Scroll to top when grid state changes (vehicle focus, search, etc.)
+  const prevFocusedRef = useRef(intent.focused_vehicle_id);
+  const prevConfidenceRef = useRef(intent.confidence);
+  useEffect(() => {
+    if (!mounted) return;
+    const focusChanged = prevFocusedRef.current !== intent.focused_vehicle_id;
+    const bandChanged = Math.floor(prevConfidenceRef.current * 4) !== Math.floor(intent.confidence * 4);
+    if (focusChanged || bandChanged) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    prevFocusedRef.current = intent.focused_vehicle_id;
+    prevConfidenceRef.current = intent.confidence;
+  }, [mounted, intent.focused_vehicle_id, intent.confidence]);
+
   // Logo click — also exits inventory browse
   const handleLogoClick = useCallback(() => {
     const defaults = createDefaultIntentVector();
