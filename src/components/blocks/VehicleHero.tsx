@@ -24,6 +24,7 @@ function conditionBadgeVariant(condition: string): "new" | "cpo" | "savings" {
 
 export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroProps) {
   const intent = useIntentStore((s) => s.intent);
+  const setFocusedVehicle = useIntentStore((s) => s.setFocusedVehicle);
 
   /* Resolve vehicle from: explicit prop > focused vehicle > intent-filtered match > fallback */
   const v = useMemo(() => {
@@ -121,7 +122,11 @@ export function VehicleHero({ manifest, vehicle, size = "large" }: VehicleHeroPr
 
         {/* CTA */}
         <div className="mt-3">
-          <Button variant="secondary" size={isLarge ? "md" : "sm"}>
+          <Button
+            variant="secondary"
+            size={isLarge ? "md" : "sm"}
+            onClick={() => setFocusedVehicle(v.vehicle_id)}
+          >
             View Details
           </Button>
         </div>
