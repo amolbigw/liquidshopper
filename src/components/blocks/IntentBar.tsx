@@ -167,7 +167,7 @@ export function IntentBar({ manifest }: IntentBarProps) {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setFocused(true)}
             placeholder="Search vehicles..."
-            className="flex-1 bg-transparent text-white text-base font-light tracking-wide placeholder:text-white/20 focus:outline-none"
+            className="flex-1 bg-transparent text-white text-base font-light tracking-wide placeholder:text-white/20 focus:outline-none focus-visible:outline-none focus:ring-0 focus:shadow-none"
           />
 
           {/* Submit button */}
