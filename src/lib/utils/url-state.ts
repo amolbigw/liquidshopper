@@ -92,7 +92,9 @@ export function intentToQueryParams(intent: IntentVector): URLSearchParams {
 }
 
 /**
- * Push the current intent vector into the browser URL as an SEO-friendly path.
+ * Sync the browser URL with the current intent vector.
+ * Uses pushState when the path changes (so back button works)
+ * and replaceState when only query params change.
  */
 export function syncURLWithIntent(intent: IntentVector): void {
   if (typeof window === "undefined") return;
@@ -102,11 +104,15 @@ export function syncURLWithIntent(intent: IntentVector): void {
   const search = params.toString();
   const newURL = search ? `${path}?${search}` : path;
 
-  window.history.replaceState(
-    { intentConfidence: intent.confidence },
-    "",
-    newURL,
-  );
+  // If the path changed (not just query params), push a new history entry
+  const currentPath = window.location.pathname;
+  const stateData = { intentConfidence: intent.confidence };
+
+  if (path !== currentPath) {
+    window.history.pushState(stateData, "", newURL);
+  } else {
+    window.history.replaceState(stateData, "", newURL);
+  }
 }
 
 /**

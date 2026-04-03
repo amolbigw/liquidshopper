@@ -1,28 +1,18 @@
 "use client";
 
-import { useIntentStore, createDefaultIntentVector } from "@/lib/intent/store";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface NavBarProps {
   showInventory?: boolean;
   onToggleInventory?: () => void;
+  onLogoClick?: () => void;
 }
 
-export function NavBar({ showInventory, onToggleInventory }: NavBarProps) {
-  const updateIntent = useIntentStore((s) => s.updateIntent);
-
-  const handleLogoClick = () => {
-    const defaults = createDefaultIntentVector();
-    updateIntent(defaults);
-    if (typeof window !== "undefined") {
-      window.history.replaceState({}, "", "/");
-    }
-  };
-
+export function NavBar({ showInventory, onToggleInventory, onLogoClick }: NavBarProps) {
   return (
     <nav className="w-full max-w-[1440px] mx-auto px-4 py-3 flex items-center justify-between">
       <button
-        onClick={handleLogoClick}
+        onClick={onLogoClick}
         className="flex items-center gap-3 group"
         aria-label="Go to homepage"
       >

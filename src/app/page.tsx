@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useIntentStore } from "@/lib/intent/store";
+import { useIntentStore, createDefaultIntentVector } from "@/lib/intent/store";
 import { parseUTMParams, mapUTMToIntent } from "@/lib/signals/utm-parser";
 import { readIntentFromURL, syncURLWithIntent } from "@/lib/utils/url-state";
 import { saveVehicleView, getSearchHistory, getViewHistory } from "@/lib/utils/history";
@@ -21,6 +21,7 @@ export default function Home() {
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Initial hydration from URL/UTM/session
   useEffect(() => {
     if (!mounted || initialized.current) return;
     initialized.current = true;
@@ -37,12 +38,14 @@ export default function Home() {
     } catch { /* ignore */ }
   }, [mounted, updateIntent]);
 
+  // Sync URL + session when intent changes
   useEffect(() => {
     if (!mounted) return;
     syncURLWithIntent(intent);
     try { const { signal_history, ...r } = intent; sessionStorage.setItem("ls_intent", JSON.stringify(r)); } catch { /* */ }
   }, [intent, mounted]);
 
+  // Track vehicle views
   useEffect(() => {
     if (!mounted || !intent.focused_vehicle_id) return;
     const vehicle = MOCK_VEHICLES.find((v) => v.vehicle_id === intent.focused_vehicle_id);
@@ -51,12 +54,41 @@ export default function Home() {
     }
   }, [mounted, intent.focused_vehicle_id]);
 
+  // Handle browser back/forward button
+  useEffect(() => {
+    if (!mounted) return;
+
+    const handlePopState = () => {
+      // Re-read intent from the URL the browser navigated to
+      const urlIntent = readIntentFromURL();
+      if (urlIntent && Object.keys(urlIntent).length > 0) {
+        updateIntent(urlIntent);
+      } else {
+        // Back to homepage — reset to Discovery
+        const defaults = createDefaultIntentVector();
+        updateIntent(defaults);
+      }
+      setShowInventory(false);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [mounted, updateIntent]);
+
   // Exit inventory browse when intent changes (user clicked a vehicle or searched)
   useEffect(() => {
     if (intent.confidence > 0.25 || intent.focused_vehicle_id) {
       setShowInventory(false);
     }
   }, [intent.confidence, intent.focused_vehicle_id]);
+
+  // Logo click — also exits inventory browse
+  const handleLogoClick = useCallback(() => {
+    const defaults = createDefaultIntentVector();
+    updateIntent(defaults);
+    setShowInventory(false);
+    window.history.pushState({}, "", "/");
+  }, [updateIntent]);
 
   const handleToggleInventory = useCallback(() => {
     setShowInventory((prev) => !prev);
@@ -77,7 +109,11 @@ export default function Home() {
 
   return (
     <>
-      <NavBar showInventory={showInventory} onToggleInventory={handleToggleInventory} />
+      <NavBar
+        showInventory={showInventory}
+        onToggleInventory={handleToggleInventory}
+        onLogoClick={handleLogoClick}
+      />
       <main className="min-h-screen pb-4">
         {showInventory ? (
           <InventoryBrowse />
