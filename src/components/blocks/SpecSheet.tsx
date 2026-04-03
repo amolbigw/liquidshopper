@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import type { BlockManifest } from "@/lib/layout/types";
 import type { VehicleRecord } from "@/lib/inventory/types";
 import { MOCK_VEHICLES } from "@/lib/inventory/mock-data";
+import { useIntentStore } from "@/lib/intent/store";
 
 interface SpecSheetProps {
   manifest: BlockManifest;
@@ -34,13 +35,16 @@ function SpecRow({ label, value, alt }: { label: string; value: string; alt?: bo
 export function SpecSheet({ manifest }: SpecSheetProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
+  const focusedVehicleId = useIntentStore((s) => s.intent.focused_vehicle_id);
+
   const vehicle: VehicleRecord | null = useMemo(() => {
-    const vid = manifest.content_query.vehicle_id;
+    // Use focused vehicle from intent store, then manifest query, then fallback
+    const vid = focusedVehicleId ?? manifest.content_query.vehicle_id;
     if (vid) {
       return MOCK_VEHICLES.find((mv) => mv.vehicle_id === vid) ?? MOCK_VEHICLES[0];
     }
     return MOCK_VEHICLES[0];
-  }, [manifest.content_query.vehicle_id]);
+  }, [focusedVehicleId, manifest.content_query.vehicle_id]);
 
   if (!vehicle) return null;
 

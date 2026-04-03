@@ -19,6 +19,7 @@ import { PriceBreakdown } from "@/components/blocks/PriceBreakdown";
 import { ConversionCTA } from "@/components/blocks/ConversionCTA";
 import { SpecSheet } from "@/components/blocks/SpecSheet";
 import { CompareTray } from "@/components/blocks/CompareTray";
+import { SimilarVehicles } from "@/components/blocks/SimilarVehicles";
 
 /** Render the correct block component for a given manifest entry. */
 function renderBlock(manifest: BlockManifest) {
@@ -28,6 +29,10 @@ function renderBlock(manifest: BlockManifest) {
     case "hero":
       return <VehicleHero manifest={manifest} />;
     case "vehicle_card":
+      // Use SimilarVehicles list for the similar_0 block in Vehicle Focus state
+      if (manifest.block_id === "similar_0") {
+        return <SimilarVehicles manifest={manifest} />;
+      }
       return <VehicleCard manifest={manifest} />;
     case "browse":
       return <BrowseByType manifest={manifest} />;

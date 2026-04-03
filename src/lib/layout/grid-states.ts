@@ -99,11 +99,11 @@ export const VEHICLE_FOCUS_STATE: GridStateTemplate = {
     // Rows 5-7: CTAs (3x3)
     block("cta_0", "cta", "7/10", "5/8", 9),
 
-    // Rows 7-9: Specs (4x3)
-    block("specs_0", "specs", "1/5", "7/10", 7),
+    // Rows 7-9: Specs (3x3) — compact
+    block("specs_0", "specs", "1/4", "7/10", 7),
 
-    // Rows 7-9: Similar vehicle card (2x3)
-    block("vehicle_card_0", "vehicle_card", "5/7", "7/10", 6),
+    // Rows 7-9: Similar vehicles list (3x3)
+    block("similar_0", "vehicle_card", "4/7", "7/10", 6),
 
     // Rows 8-9: Trust (3x2)
     block("trust_0", "trust", "7/10", "8/10", 4),
